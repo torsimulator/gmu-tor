@@ -29,7 +29,7 @@ SocksPort 0
 ExitPolicy "reject *:*"
 
 RelayBandwidthRate 128 KB
-#MaxAdvertisedBandwidth 50 KB
+MaxAdvertisedBandwidth 128 KB
 
 CellStatistics 1
 DirReqStatistics 1
