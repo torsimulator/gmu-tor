@@ -11,7 +11,7 @@
 
 <!-- the length of our experiment in seconds -->
 
-<kill time="1800" />
+<!--kill time="1800" />
 
 <!-- our services -->
 
