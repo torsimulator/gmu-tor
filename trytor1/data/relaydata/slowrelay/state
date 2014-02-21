@@ -1,0 +1,29 @@
+# Tor state file last generated on 1969-12-31 19:24:46 local time
+# Other times below are in GMT
+# You *do not* need to edit this file.
+
+BWHistoryReadEnds 1970-01-01 00:30:00
+BWHistoryReadValues 72704,30262272
+BWHistoryReadMaxima 2048,142336
+BWHistoryWriteEnds 1970-01-01 00:30:00
+BWHistoryWriteValues 65536,30668800
+BWHistoryWriteMaxima 2048,141312
+BWHistoryDirReadEnds 1970-01-01 00:15:00
+BWHistoryDirReadValues 0
+BWHistoryDirReadMaxima 0
+BWHistoryDirWriteEnds 1970-01-01 00:15:00
+BWHistoryDirWriteValues 0
+BWHistoryDirWriteMaxima 0
+TorVersion Tor 0.2.4.3-alpha-dev
+LastRotatedOnionKey 1970-01-01 00:01:00
+LastWritten 1970-01-01 00:24:46
+TotalBuildTimes 10
+CircuitBuildTimeBin 1525 1
+CircuitBuildTimeBin 1675 2
+CircuitBuildTimeBin 1775 1
+CircuitBuildTimeBin 1925 1
+CircuitBuildTimeBin 2225 1
+CircuitBuildTimeBin 2975 1
+CircuitBuildTimeBin 4375 1
+CircuitBuildTimeBin 4625 1
+CircuitBuildTimeBin 4675 1
