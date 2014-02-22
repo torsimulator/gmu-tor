@@ -56,7 +56,7 @@
     <!--<application plugin="torctl" time="901" arguments="single localhost 9051 log STREAM,CIRC,CIRC_MINOR,ORCONN,BW,STREAM_BW,OR_BW,DIR_BW,EXIT_BW,BUILDTIMEOUT_SET,CLIENTS_SEEN,GUARD,CELL_STATS,TOKENS,OR_TOKENS" />
     -->
     <!--application plugin="file" time="1200" arguments="client single fileserver 80 localhost 9000 1 /1MiB.urnd" /-->
-    <application plugin="file" time="1200" arguments="client single fileserver 80 localhost 9000 100 /320KiB.urnd" />
+    <application plugin="file" time="1200" arguments="client single fileserver 80 localhost 9000 1 /320KiB.urnd" />
     <!--application plugin="file" time="1200" arguments="client multi ./download-spec localhost 9000 ./think-time -1` 2" /-->
 </node >
 
