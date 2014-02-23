@@ -60,9 +60,9 @@
     <application plugin="file" time="1200" arguments="client multi ./light-download-spec.dat localhost 9000 ./think-time -1 2" />
 </node >
 
-<!--node id="bulkfileclient" >
+<node id="bulkfileclient" >
     <application plugin="tor" time="900" arguments="client 1024 1024000 1024000 ./client.torrc ./data/clientdata ~/.shadow/share/geoip" />
-    <application plugin="file" time="1200" arguments="client single fileserver 80 localhost 9000 1 /5MiB.urnd" />
+    <application plugin="file" time="1200" arguments="client multi ./bulk-download-spec.dat 80 localhost 9000 ./think-time -1 2" />
     
 </node>
 
