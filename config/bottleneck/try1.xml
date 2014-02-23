@@ -1,6 +1,6 @@
 <!-- our network -->
 
-<cluster id="vnet" bandwidthdown="10240" bandwidthup="10240" />
+<cluster id="vnet" bandwidthdown="1024000" bandwidthup="1024000" />
 <link clusters="vnet vnet" latency="60" jitter="20" packetloss="0.0" />
 
 <!-- the plug-ins we will be using -->
@@ -15,7 +15,7 @@
 
 <!-- our services -->
 
-<node id="fileserver" bandwidthdown="102400" bandwidthup="102400" >
+<node id="fileserver" bandwidthdown="10240000" bandwidthup="10240000" >
     <application plugin="file" time="1" arguments="server 80 ~/.shadow/share/" />
 </node >
 
@@ -32,17 +32,17 @@
     <!--<application plugin="torctl" time="2" arguments="single localhost 9051 log STREAM,CIRC,CIRC_MINOR,ORCONN,BW,STREAM_BW,OR_BW,DIR_BW,EXIT_BW,BUILDTIMEOUT_SET,CLIENTS_SEEN,GUARD,CELL_STATS,TOKENS,OR_TOKENS" />
     -->
 </node >
-<node id="exit" quantity="1" >
+<node id="exit" quantity="1"  bandwidthdown="10240000" bandwidthup="10240000" >
     <application plugin="tor" time="60" arguments="exitrelay 1024 1024000 1024000 ./exit.torrc ./data/exitdata ~/.shadow/share/geoip" />
     <!--<application plugin="torctl" time="61" arguments="single localhost 9051 log STREAM,CIRC,CIRC_MINOR,ORCONN,BW,STREAM_BW,OR_BW,DIR_BW,EXIT_BW,BUILDTIMEOUT_SET,CLIENTS_SEEN,GUARD,CELL_STATS,TOKENS,OR_TOKENS" />
     -->
 </node >
-<node id="fastrelay" quantity="1" >
+<node id="fastrelay" quantity="1"  bandwidthdown="10240000" bandwidthup="10240000" >
     <application plugin="tor" time="60" arguments="relay 1024 1024000 1024000 ./fastrelay.torrc ./data/relaydata ~/.shadow/share/geoip" />
     <!--<application plugin="torctl" time="61" arguments="single localhost 9051 log STREAM,CIRC,CIRC_MINOR,ORCONN,BW,STREAM_BW,OR_BW,DIR_BW,EXIT_BW,BUILDTIMEOUT_SET,CLIENTS_SEEN,GUARD,CELL_STATS,TOKENS,OR_TOKENS" />
     -->
 </node>
-<node id="slowrelay" quantity="1" >
+<node id="slowrelay" quantity="1"  bandwidthdown="10240000" bandwidthup="10240000" >
     <application plugin="tor" time="60" arguments="relay 1024 1024000 1024000 ./slowrelay.torrc ./data/relaydata ~/.shadow/share/geoip" />
     <!--<application plugin="torctl" time="61" arguments="single localhost 9051 log STREAM,CIRC,CIRC_MINOR,ORCONN,BW,STREAM_BW,OR_BW,DIR_BW,EXIT_BW,BUILDTIMEOUT_SET,CLIENTS_SEEN,GUARD,CELL_STATS,TOKENS,OR_TOKENS" />
     -->
@@ -56,7 +56,7 @@
     <!--<application plugin="torctl" time="901" arguments="single localhost 9051 log STREAM,CIRC,CIRC_MINOR,ORCONN,BW,STREAM_BW,OR_BW,DIR_BW,EXIT_BW,BUILDTIMEOUT_SET,CLIENTS_SEEN,GUARD,CELL_STATS,TOKENS,OR_TOKENS" />
     -->
     <!--application plugin="file" time="1200" arguments="client single fileserver 80 localhost 9000 1 /1MiB.urnd" /-->
-    <application plugin="file" time="1200" arguments="client single fileserver 80 localhost 9000 1 /320KiB.urnd" />
+    <application plugin="file" time="1200" arguments="client single fileserver 80 localhost 9000 100 /1MiB.urnd" />
     <!--application plugin="file" time="1200" arguments="client multi ./download-spec localhost 9000 ./think-time -1` 2" /-->
 </node >
 
