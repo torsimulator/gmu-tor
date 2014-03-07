@@ -55,15 +55,15 @@
     <application plugin="tor" time="900" arguments="client 1024 1024000 1024000 ./client.torrc ./data/clientdata ~/.shadow/share/geoip" />
     <!--<application plugin="torctl" time="901" arguments="single localhost 9051 log STREAM,CIRC,CIRC_MINOR,ORCONN,BW,STREAM_BW,OR_BW,DIR_BW,EXIT_BW,BUILDTIMEOUT_SET,CLIENTS_SEEN,GUARD,CELL_STATS,TOKENS,OR_TOKENS" />
     -->
-    <application plugin="file" time="1200" arguments="client single fileserver 80 localhost 9000 3 /320KiB.urnd" />
+    <!--application plugin="file" time="1200" arguments="client single fileserver 80 localhost 9000 3 /320KiB.urnd" /-->
     <!--application plugin="file" time="1200" arguments="client single fileserver 80 localhost 9000 1 /320KiB.urnd" /-->
-    <!--application plugin="file" time="1200" arguments="client multi ./light-download-spec.dat localhost 9000 ./think-time -1 20" /-->
+    <application plugin="file" time="1200" arguments="client multi ./light-download-spec.dat localhost 9000 ./think-time -1 20" />
 </node >
 
 <node id="bulkfileclient" quantity="3">
     <application plugin="tor" time="900" arguments="client 1024 1024000 1024000 ./client.torrc ./data/clientdata ~/.shadow/share/geoip" />
-    <!-- application plugin="file" time="1200" arguments="client multi ./bulk-download-spec.dat localhost 9000 ./think-time -1 20" /-->
-    <application plugin="file" time="1200" arguments="client single fileserver 80 localhost 9000 1 /5MiB.urnd" />
+    <application plugin="file" time="1200" arguments="client multi ./bulk-download-spec.dat localhost 9000 ./think-time -1 10" />
+    <!--application plugin="file" time="1200" arguments="client single fileserver 80 localhost 9000 1 /5MiB.urnd" /-->
 </node>
 
 <!--node id="hiddenclient" >
