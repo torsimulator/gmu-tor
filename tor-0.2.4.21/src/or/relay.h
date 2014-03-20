@@ -48,6 +48,7 @@ void clean_cell_pool(void);
 void dump_cell_pool_usage(int severity);
 size_t packed_cell_mem_cost(void);
 
+void circuit_resume_edge_reading_wrapper(circuit_t *circ, crypt_path_t *layer_hint);
 /* For channeltls.c */
 void packed_cell_free(packed_cell_t *cell);
 

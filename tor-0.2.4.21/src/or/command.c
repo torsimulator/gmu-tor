@@ -156,7 +156,7 @@ command_process_cell(channel_t *chan, cell_t *cell)
       PROCESS_CELL(destroy, cell, chan);
       break;
     case CELL_FLOWCONTROL:
-      ++stats_n_flowcontrol_cells_processed++;
+      ++stats_n_flowcontrol_cells_processed;
       PROCESS_CELL(flowcontrol,cell,chan);
       break;
     default:
@@ -176,11 +176,11 @@ command_process_cell(channel_t *chan, cell_t *cell)
 void
 command_process_flowcontrol_cell(cell_t *cell, channel_t *chan){
 
-    tor_assert(circ);
+    tor_assert(cell);
     tor_assert(chan);
 
     circuit_t *circ =circuit_get_by_circid_channel(cell->circ_id,chan);
-    or_circuit_t *previous_node=NULL;
+    or_circuit_t *or_circ=NULL;
     uint32_t cells_fwded_neighbor;
 
     log_debug(LD_OR,
@@ -198,18 +198,20 @@ command_process_flowcontrol_cell(cell_t *cell, channel_t *chan){
 
     if(circ->n_chan==chan){
         circ->credit_balance_n = (N2+N3)-(circ->cells_fwded_n-cells_fwded_neighbor);
+        // Need to  make circ active in chan
+        circuitmux_set_num_cells(chan->cmux,circ,circ->n_chan_cells.n);
     }else{
-        previous_node=TO_OR_CIRCUIT(circ);
-        previous_node->credit_balance_p = (N2+N3)-(previous_node->cells_fwded_p-cells_fwded_neighbor);
+        or_circ=TO_OR_CIRCUIT(circ);
+        or_circ->credit_balance_p = (N2+N3)-(or_circ->cells_fwded_p-cells_fwded_neighbor);
+        // Need to  make or_circ active in chan
+        circuitmux_set_num_cells(chan->cmux,or_circ,or_circ->p_chan_cells.n);
 
     }
-    // Need to  make circ active in chan
 
-    circuitmux_make_circuit_active(chan->cmux,circ);
 
     //If exit, resume reading from the streams
     if(!circ->n_chan){
-        circuit_resume_edge_reading(circ,NULL);
+        circuit_resume_edge_reading_wrapper(circ,NULL);
     }
 
     return;

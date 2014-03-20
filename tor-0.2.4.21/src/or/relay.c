@@ -1784,6 +1784,11 @@ connection_edge_consider_sending_sendme(edge_connection_t *conn)
   }
 }
 
+void circuit_resume_edge_reading_wrapper(circuit_t *circ, crypt_path_t *layer_hint)
+{
+    circuit_resume_edge_reading(circ, layer_hint);
+    return;
+}
 /** The circuit <b>circ</b> has received a circuit-level sendme
  * (on hop <b>layer_hint</b>, if we're the OP). Go through all the
  * attached streams and let them resume reading and packaging, if
@@ -2543,7 +2548,8 @@ channel_consider_sending_flowcontrol_cell(int cell_direction, int nBuffer, circu
             if(!credit_balance)
                 or_circ->credit_balance_p = N2+N3;
             if(or_circ->cells_fwded_p % N2 ==0)
-                if(nBuffer < N2+N3)channel_send_flowcontrol(circ_id,previous_chan,or_circ->cells_fwded_p);
+                if(nBuffer < N2+N3)
+                    channel_send_flowcontrol(circ_id,previous_chan,or_circ->cells_fwded_p);
         }
         else if (!circ->n_chan){ //Exit
             //Make streams inactive if credit_balance is less than 0
@@ -2553,8 +2559,8 @@ channel_consider_sending_flowcontrol_cell(int cell_direction, int nBuffer, circu
 
                 for(conn=or_circ->n_streams;conn;conn=conn->next_stream)
                     connection_stop_reading(TO_CONN(conn));
-                circuitmux_set_num_cells(chan->cmux,circ,0);
-            }*/
+                circuitmux_set_num_cells(chan->cmux,circ,0);*/
+            }
 
         }
         else {//Middle
@@ -2573,9 +2579,9 @@ channel_consider_sending_flowcontrol_cell(int cell_direction, int nBuffer, circu
         circ->cells_fwded_n++;
         if(or_circ->is_first_hop){//Entry
             // Need to make the corresponding p_streams also inactive?
-            /*edge_connection_t *conn=NULL;
-            if(credit_balance <=0) circuitmux_set_num_cells(chan->cmux,circ,0);
-            */
+            //edge_connection_t *conn=NULL;
+            //if(credit_balance <=0) circuitmux_set_num_cells(chan->cmux,circ,0);
+
         }
         else if(!circ->n_chan){ //Exit
             if(!credit_balance)
