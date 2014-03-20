@@ -2654,7 +2654,7 @@ channel_send_destroy(circid_t circ_id, channel_t *chan, int reason)
 }
 
 void
-channel_send_flowcontrol(circid_t circ_id, channel_t *chan, uint32_t cells_fwded);
+channel_send_flowcontrol(circid_t circ_id, channel_t *chan, uint32_t cells_fwded)
 {
     cell_t cell;
     tor_assert(chan);
