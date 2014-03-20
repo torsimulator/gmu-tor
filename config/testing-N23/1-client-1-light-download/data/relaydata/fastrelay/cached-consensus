@@ -1,0 +1,40 @@
+network-status-version 3
+vote-status consensus
+consensus-method 17
+valid-after 1970-01-01 09:55:00
+fresh-until 1970-01-01 10:00:00
+valid-until 1970-01-01 10:10:00
+voting-delay 20 20
+client-versions 
+server-versions 
+known-flags Authority Exit Fast Guard HSDir Running Stable V2Dir Valid
+dir-source 4uthority 919CAD4BB055CE7EC5169F19BCA731F3D60EFB19 53.1.0.0 53.1.0.0 9112 9111
+contact shadow-support@cs.umn.edu
+vote-digest 51DB2E271B0DFC07F3C8B33CFD56A06CD24F6039
+r slowrelay Ey11y77O4FQKCtvqaDCIuvvpesc F+Q2nhj0M1FNzcV75fDmMYQdzlg 1970-01-01 00:01:00 56.1.0.0 9111 9112
+s Fast Guard HSDir Running Stable V2Dir Valid
+v Tor 0.2.4.21
+w Bandwidth=0 Unmeasured=1
+p reject 1-65535
+r fastrelay ilih2npTfD17+cKOnrhuPVJPMqM jRG2zCrDYq+ugT+cjOEVAbTfM7M 1970-01-01 00:01:00 55.1.0.0 9111 9112
+s Fast Guard HSDir Running Stable V2Dir Valid
+v Tor 0.2.4.21
+w Bandwidth=1 Unmeasured=1
+p reject 1-65535
+r 4uthority lEEmn1mJSH8HroJAYzRaCmvKsnk +/c433awOVEKbkH8lH/zg0S9j9U 1970-01-01 00:07:13 53.1.0.0 9111 9112
+s Authority Fast HSDir Running V2Dir Valid
+v Tor 0.2.4.21
+w Bandwidth=1 Unmeasured=1
+p reject 1-65535
+r exit wXCCMfKfR9iD5t2M9MUUCbm+OhI y1eAplVCy0sXKw3qHTXPimUUlzA 1970-01-01 00:01:00 54.1.0.0 9111 9112
+s Exit Fast Guard HSDir Running Stable V2Dir Valid
+v Tor 0.2.4.21
+w Bandwidth=1 Unmeasured=1
+p accept 1-65535
+directory-footer
+directory-signature 919CAD4BB055CE7EC5169F19BCA731F3D60EFB19 A432966AA4970BECD68C198843EED4CD6F3F02F3
+-----BEGIN SIGNATURE-----
+SCuxn3f1LJd2odApRmBIclQEMhoUtQ1AB6PZXwrP13jQMbf7ZOfSIHTCaeT4tvhW
+t1H2VCLifP8QEnMPn1T5M2w16/Hoedv7G0qDmFPRRg3wf3LMe4y7YrvOSCPIDLAm
+K8PwVc7w5LERAN7jINmDR0GXyd26dpd7w6p1ObifZ78=
+-----END SIGNATURE-----
