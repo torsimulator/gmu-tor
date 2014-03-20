@@ -2561,8 +2561,6 @@ channel_consider_sending_flowcontrol_cell(int cell_direction, int nBuffer, circu
                     connection_stop_reading(TO_CONN(conn));
                 circuitmux_set_num_cells(chan->cmux,circ,0);*/
             }
-
-        }
         else {//Middle
             //if(credit_balance <=0) circuitmux_set_num_cells(chan->cmux,circ,0);
             if(or_circ->cells_fwded_p % N2 ==0)
