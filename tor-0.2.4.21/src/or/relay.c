@@ -1314,7 +1314,8 @@ connection_edge_process_relay_cell(cell_t *cell, circuit_t *circ,
     case RELAY_COMMAND_DATA:
       ++stats_n_data_cells_received;
 
-   if(!get_options()->UseN23){
+   if(!get_options()->UseN23)
+   {
       if (( layer_hint && --layer_hint->deliver_window < 0) ||
           (!layer_hint && --circ->deliver_window < 0)) {
         log_fn(LOG_PROTOCOL_WARN, LD_PROTOCOL,
@@ -2442,13 +2443,14 @@ channel_flush_from_first_active_circuit(channel_t *chan, int max)
     circuitmux_set_num_cells(cmux, circ, queue->n);
 
     //N23 Modification
+    /*
     if(get_options()->UseN23){
         if (!CIRCUIT_IS_ORIGIN(circ)) {
                 int credit_balance = channel_consider_sending_flowcontrol_cell(cell_direction,queue->n,circ,chan);
                 if(credit_balance <= 0)
                     return n_flushed;
         }
-    }
+    }*/
 
 
     if (queue->n == 0)
@@ -2567,9 +2569,14 @@ channel_consider_sending_flowcontrol_cell(int cell_direction, int nBuffer, circu
     or_circuit_t *or_circ = NULL;
     circid_t circ_id;
 
-    tor_assert(chan);
-    tor_assert(circ);
+    //tor_assert(chan);
+    //tor_assert(circ);
 
+    log_debug(LD_CHANNEL,
+            " to channel %p with global ID "
+            U64_FORMAT,
+            chan,
+            U64_PRINTF_ARG(chan->global_identifier));
     /* If the cell is heading towards OP, then decrement credit_balance_p
      * and increment cell_fwded_p else decrement credit_balance_n and
      * increment cell_fwded_n. In either case check, if the credit_balance
