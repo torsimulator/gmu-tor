@@ -11,7 +11,7 @@
 
 <!-- the length of our experiment in seconds -->
 
-<kill time="36000" />
+<kill time="3600000" />
 
 <!-- our services -->
 
@@ -32,16 +32,16 @@
     <!--<application plugin="torctl" time="61" arguments="single localhost 9051 log STREAM,CIRC,CIRC_MINOR,ORCONN,BW,STREAM_BW,OR_BW,DIR_BW,EXIT_BW,BUILDTIMEOUT_SET,CLIENTS_SEEN,GUARD,CELL_STATS,TOKENS,OR_TOKENS" />
     -->
 </node >
-<node id="fastrelay" quantity="1" >
+<node id="fastrelay" quantity="2" >
     <application plugin="tor" time="60" arguments="relay 1024 1024000 1024000 ./fastrelay.torrc ./data/relaydata ~/.shadow/share/geoip" />
     <!--<application plugin="torctl" time="61" arguments="single localhost 9051 log STREAM,CIRC,CIRC_MINOR,ORCONN,BW,STREAM_BW,OR_BW,DIR_BW,EXIT_BW,BUILDTIMEOUT_SET,CLIENTS_SEEN,GUARD,CELL_STATS,TOKENS,OR_TOKENS" />
     -->
 </node>
-<node id="slowrelay" quantity="1" >
+<!--node id="slowrelay" quantity="1" >
     <application plugin="tor" time="60" arguments="relay 128 1024000 1024000 ./slowrelay.torrc ./data/relaydata ~/.shadow/share/geoip" />
     <!--<application plugin="torctl" time="61" arguments="single localhost 9051 log STREAM,CIRC,CIRC_MINOR,ORCONN,BW,STREAM_BW,OR_BW,DIR_BW,EXIT_BW,BUILDTIMEOUT_SET,CLIENTS_SEEN,GUARD,CELL_STATS,TOKENS,OR_TOKENS" />
     -->
-</node>
+<!--/node>
 
 
 <!-- our Tor client, downloads a 1MiB file 10 times -->
@@ -50,7 +50,7 @@
     <application plugin="tor" time="900" arguments="client 1024 1024000 1024000 ./client.torrc ./data/clientdata ~/.shadow/share/geoip" />
     <!--<application plugin="torctl" time="901" arguments="single localhost 9051 log STREAM,CIRC,CIRC_MINOR,ORCONN,BW,STREAM_BW,OR_BW,DIR_BW,EXIT_BW,BUILDTIMEOUT_SET,CLIENTS_SEEN,GUARD,CELL_STATS,TOKENS,OR_TOKENS" />
     -->
-    <application plugin="file" time="1200" arguments="client single fileserver 80 localhost 9000 1 /1MiB.urnd" />
+    <application plugin="file" time="1200" arguments="client single fileserver 80 localhost 9000 1 /320KiB.urnd" />
     <!--application plugin="file" time="1200" arguments="client single ./light-download-spec.dat localhost 9000 ./think-time -1 200" /-->
     <!--application plugin="file" time="1200" arguments="client multi ./bulk-download-spec.dat localhost 9000 ./think-time -1 200" /-->
     
