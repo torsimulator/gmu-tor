@@ -2657,7 +2657,7 @@ void
 channel_send_flowcontrol(circid_t circ_id, channel_t *chan, uint32_t cells_fwded)
 {
     cell_t cell;
-    tor_assert(chan);
+    //tor_assert(chan);
     if (!(chan->state == CHANNEL_STATE_CLOSING ||
         chan->state == CHANNEL_STATE_CLOSED ||
         chan->state == CHANNEL_STATE_ERROR)) {
@@ -2669,7 +2669,7 @@ channel_send_flowcontrol(circid_t circ_id, channel_t *chan, uint32_t cells_fwded
         }
     else{
         log_warn(LD_BUG,
-             "Someone called channel_send_destroy() for circID %u "
+             "Someone called channel_send_flowcontrol() for circID %u "
              "on a channel " U64_FORMAT " at %p in state %s (%d)",
              (unsigned)circ_id, U64_PRINTF_ARG(chan->global_identifier),
              chan, channel_state_to_string(chan->state),
