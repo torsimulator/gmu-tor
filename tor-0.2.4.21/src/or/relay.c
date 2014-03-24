@@ -2428,6 +2428,18 @@ channel_flush_from_first_active_circuit(channel_t *chan, int max)
     uint64_t counter = channel_write_packed_cell(chan, cell);
     cell = NULL;
 
+    //N23 Modification
+
+    if(get_options()->UseN23){
+        if (!CIRCUIT_IS_ORIGIN(circ)) {
+                int credit_balance = channel_consider_sending_flowcontrol_cell(cell_direction,queue->n,circ,chan,counter);
+                log_debug(LD_GENERAL,"Returned from sending a flowcontrol cell");
+                //if(credit_balance <= 0)
+                //    return n_flushed;
+        }
+    }
+
+
     /*
      * Don't packed_cell_free_unchecked(cell) here because the channel will
      * do so when it gets out of the channel queue (probably already did, in
@@ -2443,19 +2455,6 @@ channel_flush_from_first_active_circuit(channel_t *chan, int max)
      */
     circuitmux_notify_xmit_cells(cmux, circ, 1);
     circuitmux_set_num_cells(cmux, circ, queue->n);
-
-    //N23 Modification
-
-    if(get_options()->UseN23){
-        if (!CIRCUIT_IS_ORIGIN(circ)) {
-                int credit_balance = channel_consider_sending_flowcontrol_cell(cell_direction,queue->n,circ,chan,counter);
-                log_debug(LD_GENERAL,"Returned from sending a flowcontrol cell");
-                //if(credit_balance <= 0)
-                //    return n_flushed;
-        }
-    }
-
-
     if (queue->n == 0)
       log_debug(LD_GENERAL, "Made a circuit inactive.");
 
@@ -2572,7 +2571,7 @@ channel_consider_sending_flowcontrol_cell(int cell_direction, int nBuffer, circu
     or_circuit_t *or_circ = NULL;
     circid_t circ_id;
 
-    //tor_assert(chan);
+
     //tor_assert(circ);
 
     log_debug(LD_CHANNEL,
@@ -2586,6 +2585,7 @@ channel_consider_sending_flowcontrol_cell(int cell_direction, int nBuffer, circu
      * is low enough to send flowcontrol cell to the upstream router.
      *
     */
+    tor_assert(chan);
     if(cell_direction == CELL_DIRECTION_IN){
 
         circ_id = circ->n_circ_id;
