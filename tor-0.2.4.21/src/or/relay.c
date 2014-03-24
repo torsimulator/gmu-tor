@@ -2597,16 +2597,8 @@ channel_consider_sending_flowcontrol_cell(int cell_direction, int nBuffer, circu
 
         credit_balance = (--or_circ->credit_balance_p);
         or_circ->cells_fwded_p++;
-        if(or_circ->is_first_hop){
-            log_debug(LD_CHANNEL,"ENTRY ROUTER");
-            if(credit_balance==0)
-                or_circ->credit_balance_p = N2+N3;
-            if(or_circ->cells_fwded_p % N2 ==0)
-                if(nBuffer < N2+N3){
-                    channel_send_flowcontrol(circ_id,previous_chan,or_circ->cells_fwded_p);
-                }
-        }
-        else if (!circ->n_chan){ //Exit
+
+        if (!circ->n_chan){ //Exit
             log_debug(LD_CHANNEL,"EXIT ROUTER");
             //Make streams inactive if credit_balance is less than 0
 
@@ -2618,6 +2610,16 @@ channel_consider_sending_flowcontrol_cell(int cell_direction, int nBuffer, circu
                 circuitmux_set_num_cells(chan->cmux,circ,0);
             }*/
         }
+        else if(or_circ->is_first_hop){
+            log_debug(LD_CHANNEL,"ENTRY ROUTER");
+            if(credit_balance==0)
+                or_circ->credit_balance_p = N2+N3;
+            if(or_circ->cells_fwded_p % N2 ==0)
+                if(nBuffer < N2+N3){
+                    channel_send_flowcontrol(circ_id,previous_chan,or_circ->cells_fwded_p);
+                }
+        }
+
         else {//Middle
             //if(credit_balance <=0) circuitmux_set_num_cells(chan->cmux,circ,0);
             log_debug(LD_CHANNEL,"MIDDLE ROUTER");
@@ -2634,19 +2636,19 @@ channel_consider_sending_flowcontrol_cell(int cell_direction, int nBuffer, circu
         previous_chan = or_circ->p_chan;
         credit_balance = (++circ->credit_balance_n);
         circ->cells_fwded_n++;
-        if(or_circ->is_first_hop){//Entry
-            log_debug(LD_CHANNEL,"ENTRY ROUTER");
-            // Need to make the corresponding p_streams also inactive?
-            //edge_connection_t *conn=NULL;
-            //if(credit_balance <=0) circuitmux_set_num_cells(chan->cmux,circ,0);
-
-        }
-        else if(!circ->n_chan){ //Exit
+        if(!circ->n_chan){ //Exit
             log_debug(LD_CHANNEL,"EXIT ROUTER");
             /*if(!credit_balance)
                 circ->credit_balance_n = N2+N3;
             if(circ->cells_fwded_n % N2 ==0)
                 if(nBuffer < N2+N3)channel_send_flowcontrol(circ_id,previous_chan,circ->cells_fwded_n);*/
+        }
+        else if(or_circ->is_first_hop){//Entry
+            log_debug(LD_CHANNEL,"ENTRY ROUTER");
+            // Need to make the corresponding p_streams also inactive?
+            //edge_connection_t *conn=NULL;
+            //if(credit_balance <=0) circuitmux_set_num_cells(chan->cmux,circ,0);
+
         }
         else{//Middle
             log_debug(LD_CHANNEL,"MIDDLE ROUTER");
