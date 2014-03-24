@@ -2660,7 +2660,16 @@ void
 channel_send_flowcontrol(circid_t circ_id, channel_t *chan, uint32_t cells_fwded)
 {
     cell_t cell;
-    //tor_assert(chan);
+    tor_assert(chan);
+
+    log_debug(LD_OR,
+            "Sending a N23-FLOWCONTROL cell for circ_id %u on channel " U64_FORMAT
+            " (%p)",
+            (unsigned)cell->circ_id,
+            U64_PRINTF_ARG(chan->global_identifier), chan);
+
+
+
 
     if (!(chan->state == CHANNEL_STATE_CLOSING ||
         chan->state == CHANNEL_STATE_CLOSED ||
