@@ -29,7 +29,6 @@
  * The upshot of this is that comments about log levels may be messed up: for
  * "maximum severity" read "most severe" and "numerically *lowest* severity".
  */
-
 /** Debug-level severity: for hyper-verbose messages of no interest to
  * anybody but developers. */
 #define LOG_DEBUG   7
@@ -213,6 +212,7 @@ void log_err_(log_domain_mask_t domain, const char *format, ...);
 /* We don't have GCC's varargs macros, so use a global variable to pass the
  * function name to log_fn */
 extern const char *log_fn_function_name_;
+
 /* We abuse the comma operator here, since we can't use the standard
  * do {...} while (0) trick to wrap this macro, since the macro can't take
  * arguments. */
@@ -230,4 +230,3 @@ extern const char *log_fn_function_name_;
 # define TOR_TORLOG_H
 #endif
 
-static int log_counter=0;

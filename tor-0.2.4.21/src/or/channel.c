@@ -1797,7 +1797,7 @@ channel_write_packed_cell(channel_t *chan, packed_cell_t *packed_cell)
   }
 
   log_debug(LD_CHANNEL,
-            "Writing packed_cell_t %p to channel %p having counter %d with global ID ""
+            "Writing packed_cell_t %p to channel %p having counter %d with global ID "
             U64_FORMAT,
             packed_cell, chan, ++log_counter,
             U64_PRINTF_ARG(chan->global_identifier));
