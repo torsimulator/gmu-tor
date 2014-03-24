@@ -186,8 +186,6 @@
 #define ROUTER_MAX_AGE_TO_PUBLISH (60*60*24)
 /** How old do we let a saved descriptor get before force-removing it? */
 #define OLD_ROUTER_DESC_MAX_AGE (60*60*24*5)
-
-static int log_counter=0;
 /** Possible rules for generating circuit IDs on an OR connection. */
 typedef enum {
   CIRC_ID_TYPE_LOWER=0, /**< Pick from 0..1<<15-1. */

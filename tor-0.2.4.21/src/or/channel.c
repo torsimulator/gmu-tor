@@ -30,6 +30,7 @@
 #include "routerlist.h"
 
 /* Cell queue structure */
+uint64_t log_counter=0;
 
 typedef struct cell_queue_entry_s cell_queue_entry_t;
 struct cell_queue_entry_s {
@@ -1780,7 +1781,7 @@ channel_write_cell(channel_t *chan, cell_t *cell)
  * channel for transmission.
  */
 
-void
+int
 channel_write_packed_cell(channel_t *chan, packed_cell_t *packed_cell)
 {
   cell_queue_entry_t q;
@@ -1795,16 +1796,17 @@ channel_write_packed_cell(channel_t *chan, packed_cell_t *packed_cell)
     packed_cell_free(packed_cell);
     return;
   }
-
+    ++log_counter;
   log_debug(LD_CHANNEL,
             "Writing packed_cell_t %p to channel %p having counter %d with global ID "
             U64_FORMAT,
-            packed_cell, chan, ++log_counter,
+            packed_cell, chan, log_counter,
             U64_PRINTF_ARG(chan->global_identifier));
 
   q.type = CELL_QUEUE_PACKED;
   q.u.packed.packed_cell = packed_cell;
   channel_write_cell_queue_entry(chan, &q);
+  return log_counter;
 }
 
 /**

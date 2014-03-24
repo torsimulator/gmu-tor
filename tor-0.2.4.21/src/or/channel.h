@@ -21,7 +21,6 @@ typedef void (*channel_var_cell_handler_fn_ptr)(channel_t *, var_cell_t *);
 struct cell_queue_entry_s;
 TOR_SIMPLEQ_HEAD(chan_cell_queue, cell_queue_entry_s) incoming_queue;
 typedef struct chan_cell_queue chan_cell_queue_t;
-
 /*
  * Channel struct; see the channel_t typedef in or.h.  A channel is an
  * abstract interface for the OR-to-OR connection, similar to connection_or_t,
@@ -266,7 +265,7 @@ channel_listener_state_to_string(channel_listener_state_t state);
 
 void channel_mark_for_close(channel_t *chan);
 void channel_write_cell(channel_t *chan, cell_t *cell);
-void channel_write_packed_cell(channel_t *chan, packed_cell_t *cell);
+int channel_write_packed_cell(channel_t *chan, packed_cell_t *cell);
 void channel_write_var_cell(channel_t *chan, var_cell_t *cell);
 
 void channel_listener_mark_for_close(channel_listener_t *chan_l);
@@ -398,8 +397,6 @@ void channel_do_open_actions(channel_t *chan);
 
 int channel_send_destroy(circid_t circ_id, channel_t *chan,
                          int reason);
-
-void channel_send_flowcontrol(circid_t circ_id,channel_t *chan, uint32_t cells_fwded);
 
 /*
  * Outside abstract interfaces that should eventually get turned into
