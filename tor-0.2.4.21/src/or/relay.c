@@ -2443,14 +2443,14 @@ channel_flush_from_first_active_circuit(channel_t *chan, int max)
     circuitmux_set_num_cells(cmux, circ, queue->n);
 
     //N23 Modification
-    /*
+
     if(get_options()->UseN23){
         if (!CIRCUIT_IS_ORIGIN(circ)) {
                 int credit_balance = channel_consider_sending_flowcontrol_cell(cell_direction,queue->n,circ,chan);
                 if(credit_balance <= 0)
                     return n_flushed;
         }
-    }*/
+    }
 
 
     if (queue->n == 0)
