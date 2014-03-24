@@ -1873,14 +1873,14 @@ circuit_resume_edge_reading_helper(edge_connection_t *first_conn,
     or_circuit_t *or_circ = TO_OR_CIRCUIT(circ);
     cells_on_queue = or_circ->p_chan_cells.n;
   }
- /*if(get_options()->UseN23){
-    max_to_package=N2+N3-cells_on_queue;
- }*/
- else{
+
     max_to_package = circ->package_window;
     if (CELL_QUEUE_HIGHWATER_SIZE - cells_on_queue < max_to_package)
         max_to_package = CELL_QUEUE_HIGHWATER_SIZE - cells_on_queue;
- }
+
+  /*if(get_options()->UseN23){
+    max_to_package=N2+N3-cells_on_queue;
+ }*/
 
   /* Once we used to start listening on the streams in the order they
    * appeared in the linked list.  That leads to starvation on the
@@ -2608,8 +2608,8 @@ channel_consider_sending_flowcontrol_cell(int cell_direction, int nBuffer, circu
 
                 for(conn=or_circ->n_streams;conn;conn=conn->next_stream)
                     connection_stop_reading(TO_CONN(conn));
-                circuitmux_set_num_cells(chan->cmux,circ,0);*/
-            }
+                circuitmux_set_num_cells(chan->cmux,circ,0);
+            }*/
         else {//Middle
             //if(credit_balance <=0) circuitmux_set_num_cells(chan->cmux,circ,0);
             if(or_circ->cells_fwded_p % N2 ==0)
