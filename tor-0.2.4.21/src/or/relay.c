@@ -1314,7 +1314,7 @@ connection_edge_process_relay_cell(cell_t *cell, circuit_t *circ,
     case RELAY_COMMAND_DATA:
       ++stats_n_data_cells_received;
 
-   if(!get_options()->UseN23)
+   //if(!get_options()->UseN23)
    {
       if (( layer_hint && --layer_hint->deliver_window < 0) ||
           (!layer_hint && --circ->deliver_window < 0)) {
@@ -1339,7 +1339,8 @@ connection_edge_process_relay_cell(cell_t *cell, circuit_t *circ,
                  rh.stream_id);
         return 0;
       }
-   if(!get_options()->UseN23){
+   //if(!get_options()->UseN23)
+   {
       if (--conn->deliver_window < 0) { /* is it below 0 after decrement? */
         log_fn(LOG_PROTOCOL_WARN, LD_PROTOCOL,
                "(relay data) conn deliver_window below 0. Killing.");
@@ -1500,8 +1501,8 @@ connection_edge_process_relay_cell(cell_t *cell, circuit_t *circ,
                "'connected' received, no conn attached anymore. Ignoring.");
       return 0;
     case RELAY_COMMAND_SENDME:
-    if(get_options()->UseN23)
-        return 0;
+    //if(get_options()->UseN23)
+    //    return 0;
 
       if (!rh.stream_id) {
         if (layer_hint) {
@@ -1664,7 +1665,7 @@ connection_edge_package_raw_inbuf(edge_connection_t *conn, int package_partial,
   if (circuit_consider_stop_edge_reading(circ, cpath_layer))
     return 0;
 
-  if(get_options()->UseN23){
+  /*if(get_options()->UseN23){
     if(!CIRCUIT_IS_ORIGIN(circ)){
         cell_queue_t *queue;
         queue = &TO_OR_CIRCUIT(circ)->p_chan_cells;
@@ -1673,7 +1674,7 @@ connection_edge_package_raw_inbuf(edge_connection_t *conn, int package_partial,
             return 0;
         }
     }
-  }
+  }*/
   if (conn->package_window <= 0) {
     log_info(domain,"called with package_window %d. Skipping.",
              conn->package_window);
@@ -1739,7 +1740,8 @@ connection_edge_package_raw_inbuf(edge_connection_t *conn, int package_partial,
     /* circuit got marked for close, don't continue, don't need to mark conn */
     return 0;
 
-if(!get_options()->UseN23){
+//if(!get_options()->UseN23)
+{
   if (!cpath_layer) { /* non-rendezvous exit */
     tor_assert(circ->package_window > 0);
     circ->package_window--;
@@ -1778,8 +1780,8 @@ connection_edge_consider_sending_sendme(edge_connection_t *conn)
 {
   circuit_t *circ;
 
-  if(get_options()->UseN23)
-    return;
+  //if(get_options()->UseN23)
+  //  return;
 
   if (connection_outbuf_too_full(TO_CONN(conn)))
     return;
@@ -1871,9 +1873,9 @@ circuit_resume_edge_reading_helper(edge_connection_t *first_conn,
     or_circuit_t *or_circ = TO_OR_CIRCUIT(circ);
     cells_on_queue = or_circ->p_chan_cells.n;
   }
- if(get_options()->UseN23){
+ /*if(get_options()->UseN23){
     max_to_package=N2+N3-cells_on_queue;
- }
+ }*/
  else{
     max_to_package = circ->package_window;
     if (CELL_QUEUE_HIGHWATER_SIZE - cells_on_queue < max_to_package)
@@ -2601,15 +2603,15 @@ channel_consider_sending_flowcontrol_cell(int cell_direction, int nBuffer, circu
         else if (!circ->n_chan){ //Exit
             //Make streams inactive if credit_balance is less than 0
 
-            edge_connection_t *conn=NULL;
+            /*edge_connection_t *conn=NULL;
             if(credit_balance <=0){
 
                 for(conn=or_circ->n_streams;conn;conn=conn->next_stream)
                     connection_stop_reading(TO_CONN(conn));
-                circuitmux_set_num_cells(chan->cmux,circ,0);
+                circuitmux_set_num_cells(chan->cmux,circ,0);*/
             }
         else {//Middle
-            if(credit_balance <=0) circuitmux_set_num_cells(chan->cmux,circ,0);
+            //if(credit_balance <=0) circuitmux_set_num_cells(chan->cmux,circ,0);
             if(or_circ->cells_fwded_p % N2 ==0)
                 if(nBuffer<N2+N3) channel_send_flowcontrol(circ_id,previous_chan,or_circ->cells_fwded_p);
 
@@ -2626,7 +2628,7 @@ channel_consider_sending_flowcontrol_cell(int cell_direction, int nBuffer, circu
         if(or_circ->is_first_hop){//Entry
             // Need to make the corresponding p_streams also inactive?
             //edge_connection_t *conn=NULL;
-            if(credit_balance <=0) circuitmux_set_num_cells(chan->cmux,circ,0);
+            //if(credit_balance <=0) circuitmux_set_num_cells(chan->cmux,circ,0);
 
         }
         else if(!circ->n_chan){ //Exit
@@ -2636,7 +2638,7 @@ channel_consider_sending_flowcontrol_cell(int cell_direction, int nBuffer, circu
                 if(nBuffer < N2+N3)channel_send_flowcontrol(circ_id,previous_chan,circ->cells_fwded_n);
         }
         else{//Middle
-            if(credit_balance <=0) circuitmux_set_num_cells(chan->cmux,circ,0);
+            //if(credit_balance <=0) circuitmux_set_num_cells(chan->cmux,circ,0);
             if(circ->cells_fwded_n % N2 ==0)
                 if(nBuffer<N2+N3) channel_send_flowcontrol(circ_id,previous_chan,circ->cells_fwded_n);
 
