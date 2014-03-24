@@ -158,7 +158,7 @@ command_process_cell(channel_t *chan, cell_t *cell)
     case CELL_FLOWCONTROL:
       ++stats_n_flowcontrol_cells_processed;
       PROCESS_CELL(flowcontrol,cell,chan);
-      log_debug(LD_OR,"FLOWCONTROL CELL STAT: %d", stats_n_flowcontrol_cells_processed);
+      log_debug(LD_OR,"FLOWCONTROL CELL STAT: %llu RELAY CELL STAT: %llu", stats_n_flowcontrol_cells_processed,get_stats_sendme());
       break;
     default:
       log_fn(LOG_INFO, LD_PROTOCOL,

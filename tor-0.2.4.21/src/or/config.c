@@ -437,7 +437,7 @@ static config_var_t option_vars_[] = {
   V(VoteOnHidServDirectoriesV2,  BOOL,     "1"),
   VAR("___UsingTestNetworkDefaults", BOOL, UsingTestNetworkDefaults_, "0"),
   V(UseN23, BOOL, "1"),
-  V(N3Initial, UINT, "100"),
+  V(N3Initial, UINT, "990"),
 
   { NULL, CONFIG_TYPE_OBSOLETE, 0, NULL }
 };

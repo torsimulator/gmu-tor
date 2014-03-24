@@ -78,6 +78,11 @@ uint64_t stats_n_relay_cells_relayed = 0;
  */
 uint64_t stats_n_relay_cells_delivered = 0;
 
+uint64_t stats_n_sendme_cell=0;
+
+uint64_t get_stats_sendme(){
+    return stats_n_sendme_cell;
+}
 /** Used to tell which stream to read from first on a circuit. */
 static tor_weak_rng_t stream_choice_rng = TOR_WEAK_RNG_INIT;
 
@@ -1516,6 +1521,7 @@ connection_edge_process_relay_cell(cell_t *cell, circuit_t *circ,
           layer_hint->package_window += CIRCWINDOW_INCREMENT;
           log_debug(LD_APP,"circ-level sendme at origin, packagewindow %d.",
                     layer_hint->package_window);
+        ++stats_n_sendme_cell;
           circuit_resume_edge_reading(circ, layer_hint);
         } else {
           if (circ->package_window + CIRCWINDOW_INCREMENT >
@@ -2623,8 +2629,8 @@ channel_consider_sending_flowcontrol_cell(int cell_direction, int nBuffer, circu
         else {//Middle
             //if(credit_balance <=0) circuitmux_set_num_cells(chan->cmux,circ,0);
             log_debug(LD_CHANNEL,"MIDDLE ROUTER");
-            /*if(or_circ->cells_fwded_p % N2 ==0)
-                if(nBuffer<N2+N3) channel_send_flowcontrol(circ_id,previous_chan,or_circ->cells_fwded_p);*/
+            if(or_circ->cells_fwded_p % N2 ==0)
+                if(nBuffer<N2+N3) channel_send_flowcontrol(circ_id,previous_chan,or_circ->cells_fwded_p);
 
             }
     }
@@ -2638,10 +2644,10 @@ channel_consider_sending_flowcontrol_cell(int cell_direction, int nBuffer, circu
         circ->cells_fwded_n++;
         if(!circ->n_chan){ //Exit
             log_debug(LD_CHANNEL,"EXIT ROUTER");
-            /*if(!credit_balance)
+            if(!credit_balance)
                 circ->credit_balance_n = N2+N3;
             if(circ->cells_fwded_n % N2 ==0)
-                if(nBuffer < N2+N3)channel_send_flowcontrol(circ_id,previous_chan,circ->cells_fwded_n);*/
+                if(nBuffer < N2+N3)channel_send_flowcontrol(circ_id,previous_chan,circ->cells_fwded_n);
         }
         else if(or_circ->is_first_hop){//Entry
             log_debug(LD_CHANNEL,"ENTRY ROUTER");
@@ -2653,8 +2659,8 @@ channel_consider_sending_flowcontrol_cell(int cell_direction, int nBuffer, circu
         else{//Middle
             log_debug(LD_CHANNEL,"MIDDLE ROUTER");
             //if(credit_balance <=0) circuitmux_set_num_cells(chan->cmux,circ,0);
-            //if(circ->cells_fwded_n % N2 ==0)
-                //if(nBuffer<N2+N3) channel_send_flowcontrol(circ_id,previous_chan,circ->cells_fwded_n);
+            if(circ->cells_fwded_n % N2 ==0)
+                if(nBuffer<N2+N3) channel_send_flowcontrol(circ_id,previous_chan,circ->cells_fwded_n);
 
         }
     }
