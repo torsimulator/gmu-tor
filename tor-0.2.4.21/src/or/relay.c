@@ -2449,8 +2449,9 @@ channel_flush_from_first_active_circuit(channel_t *chan, int max)
     if(get_options()->UseN23){
         if (!CIRCUIT_IS_ORIGIN(circ)) {
                 int credit_balance = channel_consider_sending_flowcontrol_cell(cell_direction,queue->n,circ,chan);
-                if(credit_balance <= 0)
-                    return n_flushed;
+                log_debug(LD_GENERAL,"Returned from sending a flowcontrol cell");
+                //if(credit_balance <= 0)
+                //    return n_flushed;
         }
     }
 
@@ -2575,9 +2576,9 @@ channel_consider_sending_flowcontrol_cell(int cell_direction, int nBuffer, circu
     //tor_assert(circ);
 
     log_debug(LD_CHANNEL,
-            " to channel %p with global ID "
+            " to channel %p and counter %d, with global ID "
             U64_FORMAT,
-            chan,
+            chan,log_counter,
             U64_PRINTF_ARG(chan->global_identifier));
     /* If the cell is heading towards OP, then decrement credit_balance_p
      * and increment cell_fwded_p else decrement credit_balance_n and

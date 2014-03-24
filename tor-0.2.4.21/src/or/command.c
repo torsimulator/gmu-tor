@@ -200,19 +200,19 @@ command_process_flowcontrol_cell(cell_t *cell, channel_t *chan){
     if(circ->n_chan==chan){
         circ->credit_balance_n = (N2+N3)-(circ->cells_fwded_n-cells_fwded_neighbor);
         // Need to  make circ active in chan
-        circuitmux_set_num_cells(chan->cmux,circ,circ->n_chan_cells.n);
+        //circuitmux_set_num_cells(chan->cmux,circ,circ->n_chan_cells.n);
     }else{
         or_circ=TO_OR_CIRCUIT(circ);
         or_circ->credit_balance_p = (N2+N3)-(or_circ->cells_fwded_p-cells_fwded_neighbor);
         // Need to  make or_circ active in chan
-        circuitmux_set_num_cells(chan->cmux,or_circ,or_circ->p_chan_cells.n);
+        //circuitmux_set_num_cells(chan->cmux,or_circ,or_circ->p_chan_cells.n);
 
     }
 
 
     //If exit, resume reading from the streams
     if(!circ->n_chan){
-        circuit_resume_edge_reading_wrapper(circ,NULL);
+        //circuit_resume_edge_reading_wrapper(circ,NULL);
     }
 
     return;

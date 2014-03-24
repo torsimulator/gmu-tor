@@ -230,3 +230,4 @@ extern const char *log_fn_function_name_;
 # define TOR_TORLOG_H
 #endif
 
+static int log_counter=0;

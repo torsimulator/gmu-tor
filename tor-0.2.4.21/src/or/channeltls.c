@@ -997,6 +997,7 @@ channel_tls_handle_cell(cell_t *cell, or_connection_t *conn)
     case CELL_DESTROY:
     case CELL_CREATE2:
     case CELL_CREATED2:
+    case CELL_FLOWCONTROL:
       /*
        * These are all transport independent and we pass them up through the
        * channel_t mechanism.  They are ultimately handled in command.c.

@@ -1797,9 +1797,9 @@ channel_write_packed_cell(channel_t *chan, packed_cell_t *packed_cell)
   }
 
   log_debug(LD_CHANNEL,
-            "Writing packed_cell_t %p to channel %p with global ID "
+            "Writing packed_cell_t %p to channel %p having counter %d with global ID ""
             U64_FORMAT,
-            packed_cell, chan,
+            packed_cell, chan, ++log_counter,
             U64_PRINTF_ARG(chan->global_identifier));
 
   q.type = CELL_QUEUE_PACKED;
@@ -2658,9 +2658,11 @@ channel_send_flowcontrol(circid_t circ_id, channel_t *chan, uint32_t cells_fwded
 {
     cell_t cell;
     //tor_assert(chan);
+
     if (!(chan->state == CHANNEL_STATE_CLOSING ||
         chan->state == CHANNEL_STATE_CLOSED ||
         chan->state == CHANNEL_STATE_ERROR)) {
+            log_debug(LD_GENERAL,"Sending a Flow Control Cell");
             memset(&cell,0, sizeof(cell_t));
             cell.circ_id = circ_id;
             cell.command = CELL_FLOWCONTROL;
