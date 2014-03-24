@@ -2622,9 +2622,9 @@ channel_consider_sending_flowcontrol_cell(int cell_direction, int nBuffer, circu
             //if(credit_balance <=0) circuitmux_set_num_cells(chan->cmux,circ,0);
             log_debug(LD_CHANNEL,"MIDDLE ROUTER");
             /*if(or_circ->cells_fwded_p % N2 ==0)
-                if(nBuffer<N2+N3) channel_send_flowcontrol(circ_id,previous_chan,or_circ->cells_fwded_p);
+                if(nBuffer<N2+N3) channel_send_flowcontrol(circ_id,previous_chan,or_circ->cells_fwded_p);*/
 
-            }*/
+            }
     }
     else{    //Heading towards exit
 
