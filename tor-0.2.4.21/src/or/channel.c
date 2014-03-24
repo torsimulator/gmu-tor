@@ -2665,7 +2665,7 @@ channel_send_flowcontrol(circid_t circ_id, channel_t *chan, uint32_t cells_fwded
     log_debug(LD_OR,
             "Sending a N23-FLOWCONTROL cell for circ_id %u on channel " U64_FORMAT
             " (%p)",
-            (unsigned)cell->circ_id,
+            (unsigned)circ_id,
             U64_PRINTF_ARG(chan->global_identifier), chan);
 
 
