@@ -1788,15 +1788,16 @@ channel_write_packed_cell(channel_t *chan, packed_cell_t *packed_cell)
 
   tor_assert(chan);
   tor_assert(packed_cell);
+  ++log_counter;
 
   if (chan->state == CHANNEL_STATE_CLOSING) {
     log_debug(LD_CHANNEL, "Discarding packed_cell_t %p on closing channel %p "
               "with global ID "U64_FORMAT, packed_cell, chan,
               U64_PRINTF_ARG(chan->global_identifier));
     packed_cell_free(packed_cell);
-    return;
+    return log_counter;
   }
-    ++log_counter;
+
   log_debug(LD_CHANNEL,
             "Writing packed_cell_t %p to channel %p having counter %d with global ID "
             U64_FORMAT,
