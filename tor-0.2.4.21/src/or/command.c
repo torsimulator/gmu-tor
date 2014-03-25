@@ -190,6 +190,11 @@ command_process_flowcontrol_cell(cell_t *cell, channel_t *chan){
       hop towards the exit, then increment credit_balance_n else increment
       credit_balance_p.
     */
+    log_debug(LD_OR,
+            "Got a N23-FLOWCONTROL cell for circ_id %u on channel " U64_FORMAT
+            " (%p)",
+            (unsigned)cell->circ_id,
+            U64_PRINTF_ARG(chan->global_identifier), chan);
 
     if(circ->n_chan==chan){
         circ->credit_balance_n = (N2+N3)-(circ->cells_fwded_n-cells_fwded_neighbor);
