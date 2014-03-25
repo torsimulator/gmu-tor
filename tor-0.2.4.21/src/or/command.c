@@ -184,12 +184,6 @@ command_process_flowcontrol_cell(cell_t *cell, channel_t *chan){
     or_circuit_t *or_circ=NULL;
     uint32_t cells_fwded_neighbor;
 
-    log_debug(LD_OR,
-            "Got a N23-FLOWCONTROL cell for circ_id %u on channel " U64_FORMAT
-            " (%p)",
-            (unsigned)cell->circ_id,
-            U64_PRINTF_ARG(chan->global_identifier), chan);
-
     cells_fwded_neighbor = ntohl(get_uint32(cell->payload));
 
     /*If the flowcontrol cell was received from a node which is the next
@@ -209,10 +203,36 @@ command_process_flowcontrol_cell(cell_t *cell, channel_t *chan){
 
     }
 
+    if(!circ->n_chan){
+        log_debug(LD_OR,
+            "EXIT Router got a N23-FLOWCONTROL cell for circ_id %u on channel " U64_FORMAT
+            " (%p)",
+            (unsigned)cell->circ_id,
+            U64_PRINTF_ARG(chan->global_identifier), chan);
+
+    }
+    else{
+
+        if(TO_OR_CIRCUIT(circ)->is_first_hop){
+            log_debug(LD_OR,
+            "ENTRY Router got a N23-FLOWCONTROL cell for circ_id %u on channel " U64_FORMAT
+            " (%p)",
+            (unsigned)cell->circ_id,
+            U64_PRINTF_ARG(chan->global_identifier), chan);
+        }
+        else{
+            log_debug(LD_OR,
+            "MIDDLE Router got a N23-FLOWCONTROL cell for circ_id %u on channel " U64_FORMAT
+            " (%p)",
+            (unsigned)cell->circ_id,
+            U64_PRINTF_ARG(chan->global_identifier), chan);
+
+        }
+    }
 
     //If exit, resume reading from the streams
     if(!circ->n_chan){
-        //circuit_resume_edge_reading_wrapper(circ,NULL);
+        circuit_resume_edge_reading_wrapper(circ,NULL);
     }
 
     return;
