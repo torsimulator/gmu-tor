@@ -208,33 +208,35 @@ command_process_flowcontrol_cell(cell_t *cell, channel_t *chan){
 
     }
 
-    /*if(!circ->n_chan){
-        log_debug(LD_OR,
-            "EXIT Router got a N23-FLOWCONTROL cell for circ_id %u on channel " U64_FORMAT
-            " (%p)",
-            (unsigned)cell->circ_id,
-            U64_PRINTF_ARG(chan->global_identifier), chan);
-
-    }
-    else{
-        or_circ=TO_OR_CIRCUIT(circ);
-
-        if(){
+    if(!CIRCUIT_IS_ORIGIN(circ)){
+        if(!circ->n_chan){
             log_debug(LD_OR,
-            "ENTRY Router got a N23-FLOWCONTROL cell for circ_id %u on channel " U64_FORMAT
-            " (%p)",
-            (unsigned)cell->circ_id,
-            U64_PRINTF_ARG(chan->global_identifier), chan);
+                "EXIT Router has received %llu N23-FLOWCONTROL cells for circ_id %u on channel " U64_FORMAT
+                " (%p)",
+                stats_n_flowcontrol_cells_processed,(unsigned)cell->circ_id,
+                U64_PRINTF_ARG(chan->global_identifier), chan);
+
         }
         else{
-            log_debug(LD_OR,
-            "MIDDLE Router got a N23-FLOWCONTROL cell for circ_id %u on channel " U64_FORMAT
-            " (%p)",
-            (unsigned)cell->circ_id,
-            U64_PRINTF_ARG(chan->global_identifier), chan);
+            or_circ=TO_OR_CIRCUIT(circ);
 
+            if(or_circ->is_first_hop){
+                log_debug(LD_OR,
+                "ENTRY Router has received %llu N23-FLOWCONTROL cell for circ_id %u on channel " U64_FORMAT
+                " (%p)",
+                stats_n_flowcontrol_cells_processed, (unsigned)cell->circ_id,
+                U64_PRINTF_ARG(chan->global_identifier), chan);
+            }
+            else{
+                log_debug(LD_OR,
+                "MIDDLE Router has received %llu N23-FLOWCONTROL cell for circ_id %u on channel " U64_FORMAT
+                " (%p)",
+                stats_n_flowcontrol_cells_processed,(unsigned)cell->circ_id,
+                U64_PRINTF_ARG(chan->global_identifier), chan);
+
+            }
         }
-    }*/
+    }
 
     //If exit, resume reading from the streams
     if(!circ->n_chan){
