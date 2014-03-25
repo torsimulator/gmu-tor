@@ -208,7 +208,7 @@ command_process_flowcontrol_cell(cell_t *cell, channel_t *chan){
 
     }
 
-    if(!circ->n_chan){
+    /*if(!circ->n_chan){
         log_debug(LD_OR,
             "EXIT Router got a N23-FLOWCONTROL cell for circ_id %u on channel " U64_FORMAT
             " (%p)",
@@ -217,8 +217,9 @@ command_process_flowcontrol_cell(cell_t *cell, channel_t *chan){
 
     }
     else{
+        or_circ=TO_OR_CIRCUIT(circ);
 
-        if(TO_OR_CIRCUIT(circ)->is_first_hop){
+        if(){
             log_debug(LD_OR,
             "ENTRY Router got a N23-FLOWCONTROL cell for circ_id %u on channel " U64_FORMAT
             " (%p)",
@@ -233,7 +234,7 @@ command_process_flowcontrol_cell(cell_t *cell, channel_t *chan){
             U64_PRINTF_ARG(chan->global_identifier), chan);
 
         }
-    }
+    }*/
 
     //If exit, resume reading from the streams
     if(!circ->n_chan){
