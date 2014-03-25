@@ -158,7 +158,7 @@ command_process_cell(channel_t *chan, cell_t *cell)
     case CELL_FLOWCONTROL:
       ++stats_n_flowcontrol_cells_processed;
       PROCESS_CELL(flowcontrol,cell,chan);
-      log_debug(LD_OR,"FLOWCONTROL CELL STAT: %llu RELAY CELL STAT: %llu", stats_n_flowcontrol_cells_processed,get_stats_sendme());
+      log_debug(LD_OR,"FLOWCONTROL CELL STAT: %llu RELAY CELL STAT: %llu", stats_n_flowcontrol_cells_processed,stats_n_sendme_cell);
       break;
     default:
       log_fn(LOG_INFO, LD_PROTOCOL,
@@ -200,12 +200,12 @@ command_process_flowcontrol_cell(cell_t *cell, channel_t *chan){
     if(circ->n_chan==chan){
         circ->credit_balance_n = (N2+N3)-(circ->cells_fwded_n-cells_fwded_neighbor);
         // Need to  make circ active in chan
-        //circuitmux_set_num_cells(chan->cmux,circ,circ->n_chan_cells.n);
+        circuitmux_set_num_cells(chan->cmux,circ,circ->n_chan_cells.n);
     }else{
         or_circ=TO_OR_CIRCUIT(circ);
         or_circ->credit_balance_p = (N2+N3)-(or_circ->cells_fwded_p-cells_fwded_neighbor);
         // Need to  make or_circ active in chan
-        //circuitmux_set_num_cells(chan->cmux,or_circ,or_circ->p_chan_cells.n);
+        circuitmux_set_num_cells(chan->cmux,or_circ,or_circ->p_chan_cells.n);
 
     }
 

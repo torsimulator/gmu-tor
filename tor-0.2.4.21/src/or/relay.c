@@ -1319,7 +1319,7 @@ connection_edge_process_relay_cell(cell_t *cell, circuit_t *circ,
     case RELAY_COMMAND_DATA:
       ++stats_n_data_cells_received;
 
-   //if(!get_options()->UseN23)
+    if(!get_options()->UseN23)
    {
       if (( layer_hint && --layer_hint->deliver_window < 0) ||
           (!layer_hint && --circ->deliver_window < 0)) {
@@ -1344,7 +1344,7 @@ connection_edge_process_relay_cell(cell_t *cell, circuit_t *circ,
                  rh.stream_id);
         return 0;
       }
-   //if(!get_options()->UseN23)
+   if(!get_options()->UseN23)
    {
       if (--conn->deliver_window < 0) { /* is it below 0 after decrement? */
         log_fn(LOG_PROTOCOL_WARN, LD_PROTOCOL,
@@ -1506,8 +1506,8 @@ connection_edge_process_relay_cell(cell_t *cell, circuit_t *circ,
                "'connected' received, no conn attached anymore. Ignoring.");
       return 0;
     case RELAY_COMMAND_SENDME:
-    //if(get_options()->UseN23)
-    //    return 0;
+    if(get_options()->UseN23)
+        return 0;
 
       if (!rh.stream_id) {
         if (layer_hint) {
@@ -1671,7 +1671,7 @@ connection_edge_package_raw_inbuf(edge_connection_t *conn, int package_partial,
   if (circuit_consider_stop_edge_reading(circ, cpath_layer))
     return 0;
 
-  /*if(get_options()->UseN23){
+  if(get_options()->UseN23){
     if(!CIRCUIT_IS_ORIGIN(circ)){
         cell_queue_t *queue;
         queue = &TO_OR_CIRCUIT(circ)->p_chan_cells;
@@ -1680,7 +1680,7 @@ connection_edge_package_raw_inbuf(edge_connection_t *conn, int package_partial,
             return 0;
         }
     }
-  }*/
+  }
   if (conn->package_window <= 0) {
     log_info(domain,"called with package_window %d. Skipping.",
              conn->package_window);
@@ -1746,7 +1746,7 @@ connection_edge_package_raw_inbuf(edge_connection_t *conn, int package_partial,
     /* circuit got marked for close, don't continue, don't need to mark conn */
     return 0;
 
-//if(!get_options()->UseN23)
+if(!get_options()->UseN23)
 {
   if (!cpath_layer) { /* non-rendezvous exit */
     tor_assert(circ->package_window > 0);
@@ -1786,8 +1786,8 @@ connection_edge_consider_sending_sendme(edge_connection_t *conn)
 {
   circuit_t *circ;
 
-  //if(get_options()->UseN23)
-  //  return;
+  if(get_options()->UseN23)
+    return;
 
   if (connection_outbuf_too_full(TO_CONN(conn)))
     return;
@@ -1884,9 +1884,9 @@ circuit_resume_edge_reading_helper(edge_connection_t *first_conn,
     if (CELL_QUEUE_HIGHWATER_SIZE - cells_on_queue < max_to_package)
         max_to_package = CELL_QUEUE_HIGHWATER_SIZE - cells_on_queue;
 
-  /*if(get_options()->UseN23){
+  if(get_options()->UseN23){
     max_to_package=N2+N3-cells_on_queue;
- }*/
+ }
 
   /* Once we used to start listening on the streams in the order they
    * appeared in the linked list.  That leads to starvation on the
@@ -2434,14 +2434,16 @@ channel_flush_from_first_active_circuit(channel_t *chan, int max)
     uint64_t counter = channel_write_packed_cell(chan, cell);
     cell = NULL;
 
+    circuitmux_notify_xmit_cells(cmux, circ, 1);
+    circuitmux_set_num_cells(cmux, circ, queue->n);
     //N23 Modification
 
     if(get_options()->UseN23){
         if (!CIRCUIT_IS_ORIGIN(circ)) {
                 int credit_balance = channel_consider_sending_flowcontrol_cell(cell_direction,queue->n,circ,chan,counter);
                 log_debug(LD_GENERAL,"Returned from sending a flowcontrol cell");
-                //if(credit_balance <= 0)
-                //    return n_flushed;
+                if(credit_balance <= 0)
+                    return n_flushed;
         }
     }
 
@@ -2459,8 +2461,7 @@ channel_flush_from_first_active_circuit(channel_t *chan, int max)
      * Now update the cmux; tell it we've just sent a cell, and how many
      * we have left.
      */
-    circuitmux_notify_xmit_cells(cmux, circ, 1);
-    circuitmux_set_num_cells(cmux, circ, queue->n);
+
     if (queue->n == 0)
       log_debug(LD_GENERAL, "Made a circuit inactive.");
 
@@ -2608,13 +2609,13 @@ channel_consider_sending_flowcontrol_cell(int cell_direction, int nBuffer, circu
             log_debug(LD_CHANNEL,"EXIT ROUTER");
             //Make streams inactive if credit_balance is less than 0
 
-            /*edge_connection_t *conn=NULL;
+            edge_connection_t *conn=NULL;
             if(credit_balance <=0){
 
                 for(conn=or_circ->n_streams;conn;conn=conn->next_stream)
                     connection_stop_reading(TO_CONN(conn));
                 circuitmux_set_num_cells(chan->cmux,circ,0);
-            }*/
+            }
         }
         else if(or_circ->is_first_hop){
             log_debug(LD_CHANNEL,"ENTRY ROUTER");
@@ -2627,7 +2628,7 @@ channel_consider_sending_flowcontrol_cell(int cell_direction, int nBuffer, circu
         }
 
         else {//Middle
-            //if(credit_balance <=0) circuitmux_set_num_cells(chan->cmux,circ,0);
+            if(credit_balance <=0) circuitmux_set_num_cells(chan->cmux,circ,0);
             log_debug(LD_CHANNEL,"MIDDLE ROUTER");
             if(or_circ->cells_fwded_p % N2 ==0)
                 if(nBuffer<N2+N3) channel_send_flowcontrol(circ_id,previous_chan,or_circ->cells_fwded_p);
@@ -2653,12 +2654,12 @@ channel_consider_sending_flowcontrol_cell(int cell_direction, int nBuffer, circu
             log_debug(LD_CHANNEL,"ENTRY ROUTER");
             // Need to make the corresponding p_streams also inactive?
             //edge_connection_t *conn=NULL;
-            //if(credit_balance <=0) circuitmux_set_num_cells(chan->cmux,circ,0);
+            if(credit_balance <=0) circuitmux_set_num_cells(chan->cmux,circ,0);
 
         }
         else{//Middle
             log_debug(LD_CHANNEL,"MIDDLE ROUTER");
-            //if(credit_balance <=0) circuitmux_set_num_cells(chan->cmux,circ,0);
+            if(credit_balance <=0) circuitmux_set_num_cells(chan->cmux,circ,0);
             if(circ->cells_fwded_n % N2 ==0)
                 if(nBuffer<N2+N3) channel_send_flowcontrol(circ_id,previous_chan,circ->cells_fwded_n);
 
