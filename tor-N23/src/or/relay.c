@@ -2594,7 +2594,7 @@ connection_or_flush_from_first_active_circuit(or_connection_t *conn, int max,
       add_cell_ewma_to_conn(conn, cell_ewma);
     }
 
-    log_queue_length(circ,queue->n);
+
 //mashael_N23
         if (get_options()->UseN23) {
             if (!CIRCUIT_IS_ORIGIN(circ)) {// && (circ->n_conn)){
@@ -2657,6 +2657,7 @@ append_cell_to_circuit_queue(circuit_t *circ, or_connection_t *orconn,
   }
 
   cell_queue_append_packed_copy(queue, cell);
+  log_queue_length(circ,queue->n);
 
   /* If we have too many cells on the circuit, we should stop reading from
    * the edge streams for a while. */
