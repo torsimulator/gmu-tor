@@ -62,11 +62,11 @@ void log_statistics(circuit_t *circ, int cell_waiting_time, int cells_processed)
     }
     else{
         if(orcirc->is_first_hop){
-            log_debug(LD_OR,"ENTRY Statistics:%d ",cell_waiting_time);
+            log_debug(LD_OR,"ENTRY Statistics Cell Waiting Time:%d ",cell_waiting_time);
             log_debug(LD_OR,"ENTRY Statistics Cells Processed:%d ",cells_processed);
         }
         else{
-            log_debug(LD_OR,"MIDDLE Statistics:%d ",cell_waiting_time);
+            log_debug(LD_OR,"MIDDLE Statistics Cell Waiting Time:%d ",cell_waiting_time);
             log_debug(LD_OR,"MIDDLE Statistics Cells Processed:%d ",cells_processed);
         }
     }
