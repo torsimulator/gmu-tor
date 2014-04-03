@@ -75,17 +75,19 @@ void log_statistics(circuit_t *circ, int cell_waiting_time, int cells_processed)
 
 void log_queue_length(circuit_t *circ, int queue_length){
 
-    or_circuit_t *orcirc = TO_OR_CIRCUIT(circ);
-    if(!circ->n_conn){
-        log_debug(LD_OR,"EXIT Queue Length :%d ",queue_length);
+    if(!CIRCUIT_IS_ORIGIN(circ)){
+        if(!circ->n_conn){
+            log_debug(LD_OR,"EXIT Queue Length :%d ",queue_length);
 
-    }
-    else{
-        if(orcirc->is_first_hop){
-            log_debug(LD_OR,"ENTRY Queue Length:%d ",queue_length);
         }
         else{
-            log_debug(LD_OR,"MIDDLE Queue Length:%d ",queue_length);
+            or_circuit_t *orcirc = TO_OR_CIRCUIT(circ);
+            if(orcirc->is_first_hop){
+                log_debug(LD_OR,"ENTRY Queue Length:%d ",queue_length);
+            }
+            else{
+                log_debug(LD_OR,"MIDDLE Queue Length:%d ",queue_length);
+            }
         }
     }
     return;
