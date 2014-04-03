@@ -53,6 +53,27 @@ static int circuit_queue_streams_are_blocked(circuit_t *circ);
 static int connection_or_consider_sending_flowcontrol_cell(int cell_direction_p, int nBuffer,
                                    circuit_t *circ, or_connection_t * orconn);
 
+void log_statistics(circuit_t *circ, int cell_waiting_time, int cells_processed){
+
+    or_circuit_t *orcirc = TO_OR_CIRCUIT(circ);
+    if(!circ->n_conn){
+        log_debug(LD_OR,"EXIT Statistics Cell Waiting Time :%d ",cell_waiting_time);
+        log_debug(LD_OR,"EXIT Statistics Cells Processed:%d ",cells_processed);
+    }
+    else{
+        if(orcirc->is_first_hop){
+            log_debug(LD_OR,"ENTRY Statistics:%d ",cell_waiting_time);
+            log_debug(LD_OR,"ENTRY Statistics Cells Processed:%d ",cells_processed);
+        }
+        else{
+            log_debug(LD_OR,"MIDDLE Statistics:%d ",cell_waiting_time);
+            log_debug(LD_OR,"MIDDLE Statistics Cells Processed:%d ",cells_processed);
+        }
+    }
+    return;
+}
+
+
 /** Stop reading on edge connections when we have this many cells
  * waiting on the appropriate queue. */
 
@@ -2524,8 +2545,10 @@ connection_or_flush_from_first_active_circuit(or_connection_t *conn, int max,
             it_queue->last = NULL;
           mp_pool_release(elem);
         }
+
         orcirc->total_cell_waiting_time += cell_waiting_time;
         orcirc->processed_cells++;
+        log_statistics(circ,cell_waiting_time,orcirc->processed_cells);
       }
     }
 
