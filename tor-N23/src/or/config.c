@@ -157,7 +157,7 @@ static config_var_t _option_vars[] = {
   V(BridgePassword,              STRING,   NULL),
   V(BridgeRecordUsageByCountry,  BOOL,     "1"),
   V(BridgeRelay,                 BOOL,     "0"),
-  V(CellStatistics,              BOOL,     "0"),
+  V(CellStatistics,              BOOL,     "1"),
   V(LearnCircuitBuildTimeout,    BOOL,     "1"),
   V(CircuitBuildTimeout,         INTERVAL, "0"),
   V(CircuitIdleTimeout,          INTERVAL, "1 hour"),
