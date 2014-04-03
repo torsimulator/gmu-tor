@@ -1080,7 +1080,7 @@ connection_edge_process_relay_cell(cell_t *cell, circuit_t *circ,
 //      log_info(domain,"Got a relay-level padding cell. Dropping.");
       return 0;
     case RELAY_COMMAND_BEGIN:
-    case RELAY_COMMAND_BEGIN_DIR:
+    case RELAY_COMMAND_BEGIN_DIR:{
       if (layer_hint &&
           circ->purpose != CIRCUIT_PURPOSE_S_REND_JOINED) {
         log_fn(LOG_PROTOCOL_WARN, LD_APP,
@@ -1110,6 +1110,7 @@ connection_edge_process_relay_cell(cell_t *cell, circuit_t *circ,
       }
 
       return connection_exit_begin_conn(cell, circ);
+    }
     case RELAY_COMMAND_DATA:
 
       ++stats_n_data_cells_received;
@@ -1151,6 +1152,8 @@ if (!get_options()->UseN23) {
       connection_write_to_buf((char*)(cell->payload + RELAY_HEADER_SIZE),
                               rh.length, TO_CONN(conn));
 
+        log_debug(domain, "optimistic_data=%d",optimistic_data);
+
       if (!optimistic_data) {
         /* Only send a SENDME if we're not getting optimistic data; otherwise
          * a SENDME could arrive before the CONNECTED.
@@ -1159,7 +1162,7 @@ if (!get_options()->UseN23) {
       }
 
       return 0;
-    case RELAY_COMMAND_END:
+    case RELAY_COMMAND_END:{
       reason = rh.length > 0 ?
         get_uint8(cell->payload+RELAY_HEADER_SIZE) : END_STREAM_REASON_MISC;
       if (!conn) {
@@ -1189,6 +1192,7 @@ if (!get_options()->UseN23) {
         connection_mark_and_flush(TO_CONN(conn));
       }
       return 0;
+    }
     case RELAY_COMMAND_EXTEND: {
       static uint64_t total_n_extend=0, total_nonearly=0;
       total_n_extend++;
@@ -1223,7 +1227,7 @@ if (!get_options()->UseN23) {
       }
       return circuit_extend(cell, circ);
     }
-    case RELAY_COMMAND_EXTENDED:
+    case RELAY_COMMAND_EXTENDED:{
       if (!layer_hint) {
         log_fn(LOG_PROTOCOL_WARN, LD_PROTOCOL,
                "'extended' unsupported at non-origin. Dropping.");
@@ -1241,7 +1245,8 @@ if (!get_options()->UseN23) {
         return reason;
       }
       return 0;
-    case RELAY_COMMAND_TRUNCATE:
+    }
+    case RELAY_COMMAND_TRUNCATE:{
       if (layer_hint) {
         log_fn(LOG_PROTOCOL_WARN, LD_APP,
                "'truncate' unsupported at origin. Dropping.");
@@ -1262,7 +1267,8 @@ if (!get_options()->UseN23) {
                                      payload, sizeof(payload), NULL);
       }
       return 0;
-    case RELAY_COMMAND_TRUNCATED:
+    }
+    case RELAY_COMMAND_TRUNCATED:{
       if (!layer_hint) {
         log_fn(LOG_PROTOCOL_WARN, LD_EXIT,
                "'truncated' unsupported at non-origin. Dropping.");
@@ -1271,7 +1277,8 @@ if (!get_options()->UseN23) {
       circuit_truncated(TO_ORIGIN_CIRCUIT(circ), layer_hint,
                         get_uint8(cell->payload + RELAY_HEADER_SIZE));
       return 0;
-    case RELAY_COMMAND_CONNECTED:
+    }
+    case RELAY_COMMAND_CONNECTED:{
       if (conn) {
         log_fn(LOG_PROTOCOL_WARN, LD_PROTOCOL,
                "'connected' unsupported while open. Closing circ.");
@@ -1280,6 +1287,7 @@ if (!get_options()->UseN23) {
       log_info(domain,
                "'connected' received, no conn attached anymore. Ignoring.");
       return 0;
+    }
     case RELAY_COMMAND_SENDME:
       if (get_options()->UseN23) {
         /* If N23 is on, we don't use SENDMEs at all. */
@@ -1449,9 +1457,9 @@ connection_edge_package_raw_inbuf(edge_connection_t *conn, int package_partial,
     return 0;
 
     /* IG: Should the next stanza not be part of the above
-     * circuit_consider_stop_edge_reading code? 
-	Mashael: I don't think so. circuit_consider_stop_edge_reading() checks if the stream packaging windows are filled and 
-	if so, it stops reading from the edge_connections (streams), whereas the following code checks if the circuit queue is 
+     * circuit_consider_stop_edge_reading code?
+	Mashael: I don't think so. circuit_consider_stop_edge_reading() checks if the stream packaging windows are filled and
+	if so, it stops reading from the edge_connections (streams), whereas the following code checks if the circuit queue is
 	filled, which is equivelant to the code that checks if the circuit windows have been filled below the UseN23 code.
 */
 //if there is no room in the circuit queue, return without packaging any cell
@@ -2635,17 +2643,17 @@ append_cell_to_circuit_queue(circuit_t *circ, or_connection_t *orconn,
 
 //mashael_N23
 /*
-This function is called from connection_or_flush_from_first_active_circuit() after a cell is moved from the 
+This function is called from connection_or_flush_from_first_active_circuit() after a cell is moved from the
 circuit queue to the output buffer.
 
-Parameters: 
+Parameters:
 
-p: indicates the direction of the cell. It is set to true if it is headed towards the client and false if it is headed 
+p: indicates the direction of the cell. It is set to true if it is headed towards the client and false if it is headed
 towards the server.
 nBuffer: The size of the cicuit queue (number of cells waiting in the queue to be flushed to the output buffer).
 orconn: The connection that we just wrote a cell to in connection_or_flush_from_first_active_circuit().
 
-Functionality: 
+Functionality:
 This function first decrements the credit_balance<n,p> of the circuit and increments the cells_fwded<n,p>.
 Also, for every OR position, it performs the necessary functionality depending on the direction of the traffic.
 
@@ -2659,18 +2667,18 @@ OP. Also, it checks if it needs to send a flow_control (or credit) cell to the m
 if it needs to send a flow control (credit) cell to the exit OR of the circuit.
 3. Exit OR:
  If the credit_balance_p is equal to or less than 0, then it stops reading from the associated edge connections
-(streams that are using the circuit), and it makes the circuit inactive. The exit node does not need to send 
+(streams that are using the circuit), and it makes the circuit inactive. The exit node does not need to send
 a credit cell to an outside server because it can stop reading from the TCP sreams using the circuit.
 
-Note: The entry OR sends a flow control cell to the middle OR everytime it forwards N2 cells to the OP. 
+Note: The entry OR sends a flow control cell to the middle OR everytime it forwards N2 cells to the OP.
 Similarly, the middle OR sends a flow control cell to the exit OR everytime it sends N2 cells to entry OR.
 
 --For traffic travelling from the OP towards the exit OR, ORs perform the following depending on their position in the circuit:
 (This part was not tested well, as in our experiments, clients always download, but never upload).
 
 1. Entry OR:
-Makes the circuit inactive if circuit's credit_balance_n is less than or equal to 0. An Entry OR does not send a 
-flow control cell to the OP. 
+Makes the circuit inactive if circuit's credit_balance_n is less than or equal to 0. An Entry OR does not send a
+flow control cell to the OP.
 2. Middle OR:
  Makes the circuit inactive if the circuit's credit_balance_n is equal or less than 0. It also checks
 if it needs to send a flow control (credit) cell to the entry OR of the circuit.
@@ -2678,10 +2686,10 @@ if it needs to send a flow control (credit) cell to the entry OR of the circuit.
 Resets the circuit's credit_balance_n because it does not expect a flow control (or credit) cell from the
 server. Also, it checks if it needs to send a flow_control (or credit) cell to the middle OR.
 
-Note: The exit OR sends a flow control cell to the middle OR everytime it forwards N2 cells to the server. 
+Note: The exit OR sends a flow control cell to the middle OR everytime it forwards N2 cells to the server.
 Similarly, the middle OR sends a flow control cell to the entry OR everytime it sends N2 cells to the exit OR.
 
-   
+
 */
 
 
@@ -2711,12 +2719,14 @@ connection_or_consider_sending_flowcontrol_cell(int cell_direction_p, int nBuffe
         or_circ->cells_fwded_p++;
         credit_balance =or_circ->credit_balance_p;
         if (or_circ->is_first_hop) { //if Entry
+            log_debug(LD_OR,"ENTRY Queue Length:%d",nBuffer);
             if (credit_balance == 0) or_circ->credit_balance_p = N2+N3; //if credit balance is zero, reset it coz nobody will send us credit
             if ( or_circ->cells_fwded_p % N2 == 0) {
                 if (nBuffer <N2+N3) connection_or_send_flowcontrol(circ_id,previous_or,or_circ->cells_fwded_p);
 	//	or_circ->cells_fwded_p = 0;
             }
         } else if (!circ->n_conn) { //if Exit
+            log_debug(LD_OR,"EXIT Queue Length:%d",nBuffer);
             edge_connection_t *conn = NULL;
             if (credit_balance <= 0) { //if the credit_balance is zero, loop over all streams and stop reading from them
                 for (conn = or_circ->n_streams; conn; conn=conn->next_stream)
@@ -2724,6 +2734,7 @@ connection_or_consider_sending_flowcontrol_cell(int cell_direction_p, int nBuffe
                 make_circuit_inactive_on_conn(circ,orconn);
             }
         } else {//if Middle
+            log_debug(LD_OR,"MIDDLE Queue Length:%d",nBuffer);
             if (credit_balance <= 0) make_circuit_inactive_on_conn(circ,orconn);
             if ( or_circ->cells_fwded_p % N2 == 0) {
                 if (nBuffer <N2+N3)  connection_or_send_flowcontrol(circ_id, previous_or,or_circ->cells_fwded_p);
@@ -2738,14 +2749,17 @@ else { //cell headed OUT (going next next next)
         circ->cells_fwded_n++;
         credit_balance=circ->credit_balance_n;
         if (TO_OR_CIRCUIT(circ)->is_first_hop) { //if Entryi
+            log_debug(LD_OR,"ENTRY Queue Length:%d",nBuffer);
             if (credit_balance <= 0) make_circuit_inactive_on_conn(circ,orconn); //wait for credit from Middle
         } else if (!circ->n_conn) {//if this node is an EXIT
+            log_debug(LD_OR,"EXIT Queue Length:%d",nBuffer);
             if (credit_balance == 0) circ->credit_balance_n = N2+N3; //reset the balance for myself since no one will send me a credit
             if ( circ->cells_fwded_n % N2 == 0) {
                 connection_or_send_flowcontrol(circ_id, previous_or,circ->cells_fwded_n);
 	//	circ->cells_fwded_n = 0;
             }
         } else {//if Middle
+            log_debug(LD_OR,"MIDDLE Queue Length:%d",nBuffer);
             if (credit_balance <= 0) make_circuit_inactive_on_conn(circ,orconn);
             if ( circ->cells_fwded_n % N2 ==0) {
                 connection_or_send_flowcontrol(circ_id, previous_or,circ->cells_fwded_n);

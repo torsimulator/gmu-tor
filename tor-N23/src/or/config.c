@@ -404,7 +404,7 @@ static config_var_t _option_vars[] = {
   V(UseN23, BOOL, "1"),
   V(CircuitWindowSize, UINT, "1000"),
   V(StreamWindowSize, UINT, "500"),
-  V(N3Initial, UINT, "1000"),
+  V(N3Initial, UINT, "100"),
   V(N3Max, UINT, "500"),
   V(N3Min, UINT, "100"),
   V(CircuitQueueHighwater, UINT, "256"),

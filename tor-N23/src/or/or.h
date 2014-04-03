@@ -815,7 +815,7 @@ typedef enum {
 /** Amount to increment a stream window when we get a stream SENDME. */
 #define STREAMWINDOW_INCREMENT 50
 
-#define N2 100
+#define N2 20
 #define N3 (get_options()->N3Initial)
 
 /* Cell commands.  These values are defined in tor-spec.txt. */
