@@ -73,6 +73,24 @@ void log_statistics(circuit_t *circ, int cell_waiting_time, int cells_processed)
     return;
 }
 
+void log_queue_length(circuit_t *circ, int queue_length){
+
+    or_circuit_t *orcirc = TO_OR_CIRCUIT(circ);
+    if(!circ->n_conn){
+        log_debug(LD_OR,"EXIT Queue Length :%d ",queue_length);
+
+    }
+    else{
+        if(orcirc->is_first_hop){
+            log_debug(LD_OR,"ENTRY Queue Length:%d ",queue_length);
+        }
+        else{
+            log_debug(LD_OR,"MIDDLE Queue Length:%d ",queue_length);
+        }
+    }
+    return;
+
+}
 
 /** Stop reading on edge connections when we have this many cells
  * waiting on the appropriate queue. */
@@ -2574,6 +2592,7 @@ connection_or_flush_from_first_active_circuit(or_connection_t *conn, int max,
       add_cell_ewma_to_conn(conn, cell_ewma);
     }
 
+    log_queue_length(circ,queue->n);
 //mashael_N23
         if (get_options()->UseN23) {
             if (!CIRCUIT_IS_ORIGIN(circ)) {// && (circ->n_conn)){
@@ -2742,14 +2761,14 @@ connection_or_consider_sending_flowcontrol_cell(int cell_direction_p, int nBuffe
         or_circ->cells_fwded_p++;
         credit_balance =or_circ->credit_balance_p;
         if (or_circ->is_first_hop) { //if Entry
-            log_debug(LD_OR,"ENTRY Queue Length:%d",nBuffer);
+            //log_debug(LD_OR,"ENTRY Queue Length:%d",nBuffer);
             if (credit_balance == 0) or_circ->credit_balance_p = N2+N3; //if credit balance is zero, reset it coz nobody will send us credit
             if ( or_circ->cells_fwded_p % N2 == 0) {
                 if (nBuffer <N2+N3) connection_or_send_flowcontrol(circ_id,previous_or,or_circ->cells_fwded_p);
 	//	or_circ->cells_fwded_p = 0;
             }
         } else if (!circ->n_conn) { //if Exit
-            log_debug(LD_OR,"EXIT Queue Length:%d",nBuffer);
+            //log_debug(LD_OR,"EXIT Queue Length:%d",nBuffer);
             edge_connection_t *conn = NULL;
             if (credit_balance <= 0) { //if the credit_balance is zero, loop over all streams and stop reading from them
                 for (conn = or_circ->n_streams; conn; conn=conn->next_stream)
@@ -2757,7 +2776,7 @@ connection_or_consider_sending_flowcontrol_cell(int cell_direction_p, int nBuffe
                 make_circuit_inactive_on_conn(circ,orconn);
             }
         } else {//if Middle
-            log_debug(LD_OR,"MIDDLE Queue Length:%d",nBuffer);
+            //log_debug(LD_OR,"MIDDLE Queue Length:%d",nBuffer);
             if (credit_balance <= 0) make_circuit_inactive_on_conn(circ,orconn);
             if ( or_circ->cells_fwded_p % N2 == 0) {
                 if (nBuffer <N2+N3)  connection_or_send_flowcontrol(circ_id, previous_or,or_circ->cells_fwded_p);
@@ -2772,17 +2791,17 @@ else { //cell headed OUT (going next next next)
         circ->cells_fwded_n++;
         credit_balance=circ->credit_balance_n;
         if (TO_OR_CIRCUIT(circ)->is_first_hop) { //if Entryi
-            log_debug(LD_OR,"ENTRY Queue Length:%d",nBuffer);
+            //log_debug(LD_OR,"ENTRY Queue Length:%d",nBuffer);
             if (credit_balance <= 0) make_circuit_inactive_on_conn(circ,orconn); //wait for credit from Middle
         } else if (!circ->n_conn) {//if this node is an EXIT
-            log_debug(LD_OR,"EXIT Queue Length:%d",nBuffer);
+            //log_debug(LD_OR,"EXIT Queue Length:%d",nBuffer);
             if (credit_balance == 0) circ->credit_balance_n = N2+N3; //reset the balance for myself since no one will send me a credit
             if ( circ->cells_fwded_n % N2 == 0) {
                 connection_or_send_flowcontrol(circ_id, previous_or,circ->cells_fwded_n);
 	//	circ->cells_fwded_n = 0;
             }
         } else {//if Middle
-            log_debug(LD_OR,"MIDDLE Queue Length:%d",nBuffer);
+            //log_debug(LD_OR,"MIDDLE Queue Length:%d",nBuffer);
             if (credit_balance <= 0) make_circuit_inactive_on_conn(circ,orconn);
             if ( circ->cells_fwded_n % N2 ==0) {
                 connection_or_send_flowcontrol(circ_id, previous_or,circ->cells_fwded_n);
