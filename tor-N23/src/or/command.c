@@ -274,7 +274,7 @@ command_process_flowcontrol_cell(cell_t *cell, or_connection_t *conn)
     } else {
         TO_OR_CIRCUIT(circ)->credit_balance_p = N2 + N3 - (TO_OR_CIRCUIT(circ)->cells_fwded_p - cells_fwded_neighbor);
         cells_fwded = TO_OR_CIRCUIT(circ)->cells_fwded_p;
-        balance = TO_OR_CIRCUIT(circ)->credit_balance_p
+        balance = TO_OR_CIRCUIT(circ)->credit_balance_p;
     }
 
     log_flowcontrol(circ,cells_fwded,cells_fwded_neighbor,balance);
