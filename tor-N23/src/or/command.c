@@ -228,6 +228,26 @@ command_allowed_before_handshake(uint8_t command)
       return 0;
   }
 }
+void log_flowcontrol(circuit_t *circ, uint32_t cells_fwded,uint32_t cells_fwded_neighbor, int balance){
+
+    //time_t now = time(NULL);
+    if(!CIRCUIT_IS_ORIGIN(circ)){
+        if(!circ->n_conn){
+            log_debug(LD_OR,"EXIT fwded:%d: neigbor fwded:%d: balance:%d ",cells_fwded,cells_fwded_neighbor,balance);
+        }
+        else{
+            or_circuit_t *orcirc = TO_OR_CIRCUIT(circ);
+            if(orcirc->is_first_hop){
+                log_debug(LD_OR,"ENTRY fwded:%d: neigbor fwded:%d: balance:%d",cells_fwded,cells_fwded_neighbor,balance);
+            }
+            else{
+                log_debug(LD_OR,"MIDDLE fwded:%d: neigbor fwded:%d: balance:%d",cells_fwded,cells_fwded_neighbor,balance);
+            }
+        }
+    }
+    return;
+
+}
 
 static void
 command_process_flowcontrol_cell(cell_t *cell, or_connection_t *conn)
@@ -245,12 +265,19 @@ command_process_flowcontrol_cell(cell_t *cell, or_connection_t *conn)
        But we should also check for underflow in the subtraction from a
        malicious downstream router.
        (and symmetrically for the _p stanza) */
+    int balance;
+    uint32_t cells_fwded;
     if (circ->n_conn == conn) {
         circ->credit_balance_n = N2+N3-(circ->cells_fwded_n-cells_fwded_neighbor);
+        cells_fwded = circ->cells_fwded_n;
+        balance= circ->credit_balance_n;
     } else {
         TO_OR_CIRCUIT(circ)->credit_balance_p = N2 + N3 - (TO_OR_CIRCUIT(circ)->cells_fwded_p - cells_fwded_neighbor);
+        cells_fwded = TO_OR_CIRCUIT(circ)->cells_fwded_p;
+        balance = TO_OR_CIRCUIT(circ)->credit_balance_p
     }
 
+    log_flowcontrol(circ,cells_fwded,cells_fwded_neighbor,balance);
     /* IG: only do this entire stanza if the credit balance is now
      * non-zero.  Check to see what we should do if the credit balance
      * is now positive, but we've got nothing to send. */
