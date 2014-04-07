@@ -53,7 +53,7 @@ static int circuit_queue_streams_are_blocked(circuit_t *circ);
 static int connection_or_consider_sending_flowcontrol_cell(int cell_direction_p, int nBuffer,
                                    circuit_t *circ, or_connection_t * orconn);
 
-static time_t log_time=time(NULL);
+static time_t log_time_start=time(NULL);
 void log_statistics(circuit_t *circ, int cell_waiting_time, int cells_processed){
 
     or_circuit_t *orcirc = TO_OR_CIRCUIT(circ);
