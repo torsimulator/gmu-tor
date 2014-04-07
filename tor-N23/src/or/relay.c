@@ -2746,7 +2746,7 @@ connection_or_consider_sending_flowcontrol_cell(int cell_direction_p, int nBuffe
     int credit_balance = 0;
     or_connection_t *previous_or = NULL;
     circid_t circ_id;
-    static time_t log_time_start=time(NULL);
+    static time_t log_time_start(0);
 
     time_t now = time(NULL);
     double seconds = difftime(now,log_time_start);
@@ -2835,6 +2835,7 @@ else { //cell headed OUT (going next next next)
             }
         }
   }
+    log_time_start = now;
     return credit_balance;
 }
 //mashael_N23
