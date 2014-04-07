@@ -2746,10 +2746,11 @@ connection_or_consider_sending_flowcontrol_cell(int cell_direction_p, int nBuffe
     int credit_balance = 0;
     or_connection_t *previous_or = NULL;
     circid_t circ_id;
-    static time_t log_time_start=0;
+    //static time_t log_time_start=0;
 
-    time_t now = time(NULL);
-    double seconds = difftime(now,log_time_start);
+    //time_t now = time(NULL);
+    //double seconds = difftime(now,log_time_start);
+    double seconds = time(NULL);
 
     /* IG: In this function, we should reset cells_fwded_{n,p} after
      * calling connection_or_send_flowcontrol().  (And then just check
@@ -2791,8 +2792,8 @@ connection_or_consider_sending_flowcontrol_cell(int cell_direction_p, int nBuffe
             }
         } else {//if Middle
             //log_debug(LD_OR,"MIDDLE Queue Length:%d",nBuffer);
-            log_debug(LD_OR,"MIDDLE (IN) credit_balance:%d %.f",credit_balance,seconds);
-            log_debug(LD_OR,"MIDDLE (IN) cells_fwded_p:%d %.f",or_circ->cells_fwded_p,seconds);
+            log_debug(LD_OR,"MIDDLE (IN) credit_balance:%d %lld",credit_balance,seconds);
+            log_debug(LD_OR,"MIDDLE (IN) cells_fwded_p:%d %lld",or_circ->cells_fwded_p,seconds);
             if (credit_balance <= 0) make_circuit_inactive_on_conn(circ,orconn);
             if ( or_circ->cells_fwded_p % N2 == 0) {
                 log_debug(LD_OR,"MIDDLE Sending FLOWCONTROL cell to EXIT: %.f",seconds);
