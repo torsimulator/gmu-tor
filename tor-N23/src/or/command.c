@@ -228,7 +228,8 @@ command_allowed_before_handshake(uint8_t command)
       return 0;
   }
 }
-void log_flowcontrol(circuit_t *circ, uint32_t cells_fwded,uint32_t cells_fwded_neighbor, int balance,int direction){
+void log_flowcontrol(circuit_t *circ, uint32_t cells_fwded,uint32_t cells_fwded_neighbor, int balance,int direction)
+{
 
     long long int log_time = time(NULL);
     if(!CIRCUIT_IS_ORIGIN(circ)){

@@ -53,7 +53,7 @@ static int circuit_queue_streams_are_blocked(circuit_t *circ);
 static int connection_or_consider_sending_flowcontrol_cell(int cell_direction_p, int nBuffer,
                                    circuit_t *circ, or_connection_t * orconn);
 
-
+static int stats_n_cells_fwded = 0;
 void log_statistics(circuit_t *circ, int cell_waiting_time, int cells_processed){
 
     or_circuit_t *orcirc = TO_OR_CIRCUIT(circ);
@@ -76,18 +76,18 @@ void log_statistics(circuit_t *circ, int cell_waiting_time, int cells_processed)
 
 void log_queue_length(circuit_t *circ, int queue_length){
 
-    //time_t now = time(NULL);
+    long long int now = time(NULL);
     if(!CIRCUIT_IS_ORIGIN(circ)){
         if(!circ->n_conn){
-            log_debug(LD_OR,"EXIT Queue Length:%d ",queue_length);
+            log_debug(LD_OR,"EXIT Queue Length:%d %lld",queue_length,now);
         }
         else{
             or_circuit_t *orcirc = TO_OR_CIRCUIT(circ);
             if(orcirc->is_first_hop){
-                log_debug(LD_OR,"ENTRY Queue Length:%d ",queue_length);
+                log_debug(LD_OR,"ENTRY Queue Length:%d %lld",queue_length,now);
             }
             else{
-                log_debug(LD_OR,"MIDDLE Queue Length:%d ",queue_length);
+                log_debug(LD_OR,"MIDDLE Queue Length:%d %lld",queue_length,now);
             }
         }
     }
@@ -2595,7 +2595,8 @@ connection_or_flush_from_first_active_circuit(or_connection_t *conn, int max,
       add_cell_ewma_to_conn(conn, cell_ewma);
     }
 
-    log_queue_length(circ,queue->n);
+    if(cell_direction_p==1)
+        log_queue_length(circ,++stats_n_cells_fwded);
 //mashael_N23
         if (get_options()->UseN23) {
             if (!CIRCUIT_IS_ORIGIN(circ)) {// && (circ->n_conn)){
