@@ -2787,15 +2787,19 @@ connection_or_consider_sending_flowcontrol_cell(int cell_direction_p, int nBuffe
             log_debug(LD_OR,"EXIT (IN) cells_fwded_p:%d %lld",or_circ->cells_fwded_p,seconds);
             edge_connection_t *conn = NULL;
             if (credit_balance <= 0) { //if the credit_balance is zero, loop over all streams and stop reading from them
-                for (conn = or_circ->n_streams; conn; conn=conn->next_stream)
+                /*for (conn = or_circ->n_streams; conn; conn=conn->next_stream)
                     connection_stop_reading(TO_CONN(conn));
-                make_circuit_inactive_on_conn(circ,orconn);
+                make_circuit_inactive_on_conn(circ,orconn);*/
+                or_circ->credit_balance_p = N2+N3;
             }
         } else {//if Middle
             //log_debug(LD_OR,"MIDDLE Queue Length:%d",nBuffer);
             log_debug(LD_OR,"MIDDLE (IN) credit_balance:%d %lld",credit_balance,seconds);
             log_debug(LD_OR,"MIDDLE (IN) cells_fwded_p:%d %lld",or_circ->cells_fwded_p,seconds);
-            if (credit_balance <= 0) make_circuit_inactive_on_conn(circ,orconn);
+            if (credit_balance <= 0) {
+                make_circuit_inactive_on_conn(circ,orconn);
+                or_circ->credit_balance_p = N2+N3;
+            }
             if ( or_circ->cells_fwded_p % N2 == 0) {
                 log_debug(LD_OR,"MIDDLE Sending FLOWCONTROL cell to EXIT: %lld",seconds);
                 if (nBuffer <N2+N3)  connection_or_send_flowcontrol(circ_id, previous_or,or_circ->cells_fwded_p);
