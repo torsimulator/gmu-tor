@@ -2433,7 +2433,7 @@ connection_or_unlink_all_active_circs(or_connection_t *orconn)
  *
  * Returns the number of streams whose status we changed.
  */
-static int
+int
 set_streams_blocked_on_circ(circuit_t *circ, or_connection_t *orconn,
                             int block, streamid_t stream_id)
 {
