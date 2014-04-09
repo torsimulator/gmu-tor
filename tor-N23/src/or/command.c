@@ -234,17 +234,17 @@ void log_flowcontrol(circuit_t *circ, uint32_t cells_fwded,uint32_t cells_fwded_
     long long int log_time = time(NULL);
     if(!CIRCUIT_IS_ORIGIN(circ)){
         if(!circ->n_conn){
-            log_debug(LD_OR,"EXIT Received FLOWCONTROL cell in (%d) direction at time: %lld",direction,log_time);
+            log_debug(LD_OR,"EXIT Received FLOWCONTROL cell in (%d) direction:%d %lld",direction,cells_fwded_neighbor,log_time);
             log_debug(LD_OR,"EXIT fwded:%d: neigbor fwded:%d: balance:%d ",cells_fwded,cells_fwded_neighbor,balance);
         }
         else{
             or_circuit_t *orcirc = TO_OR_CIRCUIT(circ);
             if(orcirc->is_first_hop){
-                log_debug(LD_OR,"ENTRY Received FLOWCONTROL cell in (%d) direction at time: %lld",direction,log_time);
+                log_debug(LD_OR,"ENTRY Received FLOWCONTROL cell in (%d) direction:%d %lld",direction,cells_fwded_neighbor,log_time);
                 log_debug(LD_OR,"ENTRY fwded:%d: neigbor fwded:%d: balance:%d",cells_fwded,cells_fwded_neighbor,balance);
             }
             else{
-                log_debug(LD_OR,"MIDDLE Received FLOWCONTROL cell in (%d) direction at time: %lld",direction,log_time);
+                log_debug(LD_OR,"MIDDLE Received FLOWCONTROL cell in (%d) direction:%d %lld",direction,cells_fwded_neighbor,log_time);
                 log_debug(LD_OR,"MIDDLE fwded:%d: neigbor fwded:%d: balance:%d",cells_fwded,cells_fwded_neighbor,balance);
             }
         }
