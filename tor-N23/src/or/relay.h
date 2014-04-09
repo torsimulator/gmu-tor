@@ -64,6 +64,9 @@ unsigned cell_ewma_get_tick(void);
 void cell_ewma_set_scale_factor(const or_options_t *options,
                                 const networkstatus_t *consensus);
 void circuit_clear_cell_queue(circuit_t *circ, or_connection_t *orconn);
+static int
+set_streams_blocked_on_circ(circuit_t *circ, or_connection_t *orconn,
+                            int block, streamid_t stream_id)
 
 #ifdef RELAY_PRIVATE
 int relay_crypt(circuit_t *circ, cell_t *cell, cell_direction_t cell_direction,
