@@ -228,28 +228,33 @@ command_allowed_before_handshake(uint8_t command)
       return 0;
   }
 }
-void log_flowcontrol(circuit_t *circ, uint32_t cells_fwded,uint32_t cells_fwded_neighbor, int balance,int direction)
+int log_flowcontrol(circuit_t *circ, uint32_t cells_fwded,uint32_t cells_fwded_neighbor, int balance,int direction)
 {
 
     long long int log_time = time(NULL);
+    int node_no=0;
     if(!CIRCUIT_IS_ORIGIN(circ)){
         if(!circ->n_conn){
+            node_no=3;
             log_debug(LD_OR,"EXIT Received FLOWCONTROL cell in (%d) direction:%d %lld",direction,cells_fwded_neighbor,log_time);
             log_debug(LD_OR,"EXIT fwded:%d: neigbor fwded:%d: balance:%d ",cells_fwded,cells_fwded_neighbor,balance);
         }
         else{
+
             or_circuit_t *orcirc = TO_OR_CIRCUIT(circ);
             if(orcirc->is_first_hop){
+                node_no=1;
                 log_debug(LD_OR,"ENTRY Received FLOWCONTROL cell in (%d) direction:%d %lld",direction,cells_fwded_neighbor,log_time);
                 log_debug(LD_OR,"ENTRY fwded:%d: neigbor fwded:%d: balance:%d",cells_fwded,cells_fwded_neighbor,balance);
             }
             else{
+                node_no=2;
                 log_debug(LD_OR,"MIDDLE Received FLOWCONTROL cell in (%d) direction:%d %lld",direction,cells_fwded_neighbor,log_time);
                 log_debug(LD_OR,"MIDDLE fwded:%d: neigbor fwded:%d: balance:%d",cells_fwded,cells_fwded_neighbor,balance);
             }
         }
     }
-    return;
+    return node_no;
 
 }
 
@@ -284,12 +289,24 @@ command_process_flowcontrol_cell(cell_t *cell, or_connection_t *conn)
         direction = CELL_DIRECTION_IN;
     }
 
+    int which_node=0;
     if(direction == CELL_DIRECTION_IN)
-        log_flowcontrol(circ,cells_fwded,cells_fwded_neighbor,balance,direction);
+        which_node=log_flowcontrol(circ,cells_fwded,cells_fwded_neighbor,balance,direction);
     /* IG: only do this entire stanza if the credit balance is now
      * non-zero.  Check to see what we should do if the credit balance
      * is now positive, but we've got nothing to send. */
     make_circuit_active_on_conn(circ,conn);
+
+    if(!which_node){
+        if (! connection_get_outbuf_len(TO_CONN(conn))) {
+        /* There is no data at all waiting to be sent on the outbuf.  Add a
+         * cell, so that we can notice when it gets flushed, flushed_some can
+         * get called, and we can start putting more data onto the buffer then.
+         */
+        log_debug(LD_GENERAL, "NODE %d Primed a buffer after receiving a Flowcontrol Cell",which_node);
+        //connection_or_flush_from_first_active_circuit(conn, 1, approx_time());
+      }
+    }
     if (!circ->n_conn) { //if this is an exit, start reading streams again when a credit has been recieved
         /* IG: We may want to call this even if we're not the exit node,
          * for leaky-pipe reasons. */
