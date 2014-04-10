@@ -304,7 +304,7 @@ command_process_flowcontrol_cell(cell_t *cell, or_connection_t *conn)
          * get called, and we can start putting more data onto the buffer then.
          */
         log_debug(LD_GENERAL, "NODE %d Primed a buffer after receiving a Flowcontrol Cell",which_node);
-        //connection_or_flush_from_first_active_circuit(conn, 1, approx_time());
+        connection_or_flush_from_first_active_circuit(conn, 1, approx_time());
       }
     }
     if (!circ->n_conn) { //if this is an exit, start reading streams again when a credit has been recieved
