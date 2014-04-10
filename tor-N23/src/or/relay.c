@@ -2798,7 +2798,7 @@ connection_or_consider_sending_flowcontrol_cell(int cell_direction_p, int nBuffe
             log_debug(LD_OR,"MIDDLE (IN) cells_fwded_p:%d %lld",or_circ->cells_fwded_p,seconds);
             if (credit_balance <= 0) {
                 make_circuit_inactive_on_conn(circ,orconn);
-                or_circ->credit_balance_p = N2+N3;
+                //or_circ->credit_balance_p = N2+N3;
             }
             if ( or_circ->cells_fwded_p % N2 == 0) {
                 log_debug(LD_OR,"MIDDLE Sending FLOWCONTROL cell to EXIT: %lld",seconds);
