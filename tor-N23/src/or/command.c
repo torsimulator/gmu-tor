@@ -310,7 +310,7 @@ command_process_flowcontrol_cell(cell_t *cell, or_connection_t *conn)
     if (!circ->n_conn) { //if this is an exit, start reading streams again when a credit has been recieved
         /* IG: We may want to call this even if we're not the exit node,
          * for leaky-pipe reasons. */
-        set_streams_blocked_on_circ(circ, conn, 0, 0);      /*Unblock streams*/
+        //set_streams_blocked_on_circ(circ, conn, 0, 0);      /*Unblock streams*/
         circuit_resume_edge_reading(circ,NULL);
     }
 }
