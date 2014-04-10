@@ -297,7 +297,7 @@ command_process_flowcontrol_cell(cell_t *cell, or_connection_t *conn)
      * is now positive, but we've got nothing to send. */
     make_circuit_active_on_conn(circ,conn);
 
-    if(!which_node){
+    if(which_node){
         if (! connection_get_outbuf_len(TO_CONN(conn))) {
         /* There is no data at all waiting to be sent on the outbuf.  Add a
          * cell, so that we can notice when it gets flushed, flushed_some can
