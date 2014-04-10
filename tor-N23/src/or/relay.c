@@ -2776,7 +2776,7 @@ connection_or_consider_sending_flowcontrol_cell(int cell_direction_p, int nBuffe
             if (credit_balance == 0) or_circ->credit_balance_p = N2+N3; //if credit balance is zero, reset it coz nobody will send us credit
             if ( or_circ->cells_fwded_p % N2 == 0) {
                 if (nBuffer <N2+N3) {
-                    log_debug(LD_OR,"ENTRY Sending FLOWCONTROL cell to MIDDLE with cells_fwded:%d %lld",or_circ->cells_fwded_p,seconds);
+                    log_debug(LD_OR,"ENTRY Sending FLOWCONTROL cell to MIDDLE with cells_fwded:%d %lld",seconds);
                     connection_or_send_flowcontrol(circ_id,previous_or,or_circ->cells_fwded_p);
                 }
 	//	or_circ->cells_fwded_p = 0;
@@ -2801,7 +2801,7 @@ connection_or_consider_sending_flowcontrol_cell(int cell_direction_p, int nBuffe
                 or_circ->credit_balance_p = N2+N3;
             }
             if ( or_circ->cells_fwded_p % N2 == 0) {
-                log_debug(LD_OR,"MIDDLE Sending FLOWCONTROL cell to EXIT with cells_fwded:%d %lld",or_circ->cells_fwded_p,seconds);
+                log_debug(LD_OR,"MIDDLE Sending FLOWCONTROL cell to EXIT: %lld",seconds);
                 if (nBuffer <N2+N3)  connection_or_send_flowcontrol(circ_id, previous_or,or_circ->cells_fwded_p);
 	//	or_circ->cells_fwded_p = 0;
             }
