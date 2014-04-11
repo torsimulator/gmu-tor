@@ -240,7 +240,7 @@ command_process_flowcontrol_cell(cell_t *cell, channel_t *chan){
         // Need to  make or_circ active in chan
         circuitmux_set_num_cells(chan->cmux,circ,or_circ->p_chan_cells.n);
 
-        cells_fwded = or_circ>cells_fwded_p;
+        cells_fwded = or_circ->cells_fwded_p;
         balance = or_circ->credit_balance_p;
         direction = CELL_DIRECTION_IN;
     }
