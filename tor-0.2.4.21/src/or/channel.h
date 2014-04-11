@@ -398,6 +398,8 @@ void channel_do_open_actions(channel_t *chan);
 int channel_send_destroy(circid_t circ_id, channel_t *chan,
                          int reason);
 
+void channel_send_flowcontrol(circid_t circ_id, channel_t *chan,
+                              uint32_t cells_fwded);
 /*
  * Outside abstract interfaces that should eventually get turned into
  * something transport/address format independent.
