@@ -80,7 +80,7 @@ int stats_n_relay_cells_delivered = 0;
 
 int stats_n_sendme_cell=0;
 
-uint64_t get_stats_sendme(){
+int get_stats_sendme(){
     return stats_n_sendme_cell;
 }
 /** Used to tell which stream to read from first on a circuit. */
