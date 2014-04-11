@@ -43,7 +43,7 @@ uint64_t stats_n_relay_cells_processed = 0;
 /** How many CELL_DESTROY cells have we received, ever? */
 uint64_t stats_n_destroy_cells_processed = 0;
 /** How many CELL_FLOWCONTROL cells have we received, ever? */
-uint64_t stats_n_flowcontrol_cells_processed = 0;
+int stats_n_flowcontrol_cells_processed = 0;
 
 /* Handle an incoming channel */
 static void command_handle_incoming_channel(channel_listener_t *listener,
@@ -230,14 +230,18 @@ command_process_flowcontrol_cell(cell_t *cell, channel_t *chan){
         circ->credit_balance_n = (N2+N3)-(circ->cells_fwded_n-cells_fwded_neighbor);
         // Need to  make circ active in chan
         circuitmux_set_num_cells(chan->cmux,circ,circ->n_chan_cells.n);
+
+        cells_fwded = circ->cells_fwded_n;
         balance= circ->credit_balance_n;
         direction = CELL_DIRECTION_OUT;
     }else{
         or_circ=TO_OR_CIRCUIT(circ);
         or_circ->credit_balance_p = (N2+N3)-(or_circ->cells_fwded_p-cells_fwded_neighbor);
         // Need to  make or_circ active in chan
-        circuitmux_set_num_cells(chan->cmux,or_circ,or_circ->p_chan_cells.n);
-        balance = TO_OR_CIRCUIT(circ)->credit_balance_p;
+        circuitmux_set_num_cells(chan->cmux,circ,or_circ->p_chan_cells.n);
+
+        cells_fwded = or_circ>cells_fwded_p;
+        balance = or_circ->credit_balance_p;
         direction = CELL_DIRECTION_IN;
     }
 

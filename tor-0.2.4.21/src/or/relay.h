@@ -14,7 +14,7 @@
 
 extern uint64_t stats_n_relay_cells_relayed;
 extern uint64_t stats_n_relay_cells_delivered;
-extern uint64_t stats_n_sendme_cell;
+extern int stats_n_sendme_cell;
 uint64_t get_stats_sendme();
 int circuit_receive_relay_cell(cell_t *cell, circuit_t *circ,
                                cell_direction_t cell_direction);

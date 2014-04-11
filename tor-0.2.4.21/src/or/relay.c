@@ -60,7 +60,7 @@ static void adjust_exit_policy_from_exitpolicy_failure(origin_circuit_t *circ,
                                                   const tor_addr_t *addr);
 
 static int channel_consider_sending_flowcontrol_cell(int cell_direction,int nBuffer,
-                                                     circuit_t *circ, channel_t *chan, uint64_t log_counter);
+                                                     circuit_t *circ, channel_t *chan, int log_counter);
 
 /** Stop reading on edge connections when we have this many cells
  * waiting on the appropriate queue. */
@@ -2431,7 +2431,7 @@ channel_flush_from_first_active_circuit(channel_t *chan, int max)
                                 DIRREQ_CIRC_QUEUE_FLUSHED);
 
     /* Now send the cell */
-    uint64_t counter = channel_write_packed_cell(chan, cell);
+    int counter = channel_write_packed_cell(chan, cell);
     cell = NULL;
 
     /*
@@ -2572,7 +2572,7 @@ append_cell_to_circuit_queue(circuit_t *circ, channel_t *chan,
 */
 
 static int
-channel_consider_sending_flowcontrol_cell(int cell_direction, int nBuffer, circuit_t *circ, channel_t *chan,uint64_t log_counter)
+channel_consider_sending_flowcontrol_cell(int cell_direction, int nBuffer, circuit_t *circ, channel_t *chan,int log_counter)
 {
     int credit_balance = 0;
     channel_t *previous_chan = NULL;

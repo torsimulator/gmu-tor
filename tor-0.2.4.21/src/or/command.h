@@ -24,7 +24,7 @@ extern uint64_t stats_n_create_cells_processed;
 extern uint64_t stats_n_created_cells_processed;
 extern uint64_t stats_n_relay_cells_processed;
 extern uint64_t stats_n_destroy_cells_processed;
-extern uint64_t stats_n_flowcontrol_cells_processed;
+extern int stats_n_flowcontrol_cells_processed;
 
 #endif
 
