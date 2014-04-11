@@ -30,7 +30,7 @@
 #include "routerlist.h"
 
 /* Cell queue structure */
-uint64_t log_counter=0;
+int log_counter=0;
 
 typedef struct cell_queue_entry_s cell_queue_entry_t;
 struct cell_queue_entry_s {

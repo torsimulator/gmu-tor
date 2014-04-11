@@ -76,9 +76,9 @@ uint64_t stats_n_relay_cells_relayed = 0;
 /** Stats: how many relay cells have been delivered to streams at this
  * hop?
  */
-uint64_t stats_n_relay_cells_delivered = 0;
+int stats_n_relay_cells_delivered = 0;
 
-uint64_t stats_n_sendme_cell=0;
+int stats_n_sendme_cell=0;
 
 uint64_t get_stats_sendme(){
     return stats_n_sendme_cell;
