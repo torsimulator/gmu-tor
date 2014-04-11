@@ -2434,6 +2434,20 @@ channel_flush_from_first_active_circuit(channel_t *chan, int max)
     uint64_t counter = channel_write_packed_cell(chan, cell);
     cell = NULL;
 
+    /*
+     * Don't packed_cell_free_unchecked(cell) here because the channel will
+     * do so when it gets out of the channel queue (probably already did, in
+     * which case that was an immediate double-free bug).
+     */
+
+    /* Update the counter */
+    ++n_flushed;
+
+    /*
+     * Now update the cmux; tell it we've just sent a cell, and how many
+     * we have left.
+     */
+
     circuitmux_notify_xmit_cells(cmux, circ, 1);
     circuitmux_set_num_cells(cmux, circ, queue->n);
     //N23 Modification
@@ -2448,19 +2462,6 @@ channel_flush_from_first_active_circuit(channel_t *chan, int max)
     }
 
 
-    /*
-     * Don't packed_cell_free_unchecked(cell) here because the channel will
-     * do so when it gets out of the channel queue (probably already did, in
-     * which case that was an immediate double-free bug).
-     */
-
-    /* Update the counter */
-    ++n_flushed;
-
-    /*
-     * Now update the cmux; tell it we've just sent a cell, and how many
-     * we have left.
-     */
 
     if (queue->n == 0)
       log_debug(LD_GENERAL, "Made a circuit inactive.");
@@ -2578,14 +2579,8 @@ channel_consider_sending_flowcontrol_cell(int cell_direction, int nBuffer, circu
     or_circuit_t *or_circ = NULL;
     circid_t circ_id;
 
-
-
-
-    log_debug(LD_CHANNEL,
-            " to channel %p and counter %d, with global ID "
-            U64_FORMAT,
-            chan,log_counter,
-            U64_PRINTF_ARG(chan->global_identifier));
+    log_debug(LD_CHANNEL," to channel %p and counter %d, with global ID "
+            U64_FORMAT,chan,log_counter, U64_PRINTF_ARG(chan->global_identifier));
     /* If the cell is heading towards OP, then decrement credit_balance_p
      * and increment cell_fwded_p else decrement credit_balance_n and
      * increment cell_fwded_n. In either case check, if the credit_balance

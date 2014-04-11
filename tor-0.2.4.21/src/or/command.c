@@ -169,6 +169,36 @@ command_process_cell(channel_t *chan, cell_t *cell)
   }
 }
 
+int log_flowcontrol(circuit_t *circ, uint32_t cells_fwded,uint32_t cells_fwded_neighbor, int balance,int direction)
+{
+
+    long long int log_time = time(NULL);
+    int node_no=0;
+    if(!CIRCUIT_IS_ORIGIN(circ)){
+        if(!circ->n_conn){
+            node_no=3;
+            log_debug(LD_OR,"EXIT Received FLOWCONTROL cell in (%d) direction:%d %lld",direction,cells_fwded_neighbor,log_time);
+            log_debug(LD_OR,"EXIT fwded:%d: neigbor fwded:%d: balance:%d ",cells_fwded,cells_fwded_neighbor,balance);
+        }
+        else{
+
+            or_circuit_t *orcirc = TO_OR_CIRCUIT(circ);
+            if(orcirc->is_first_hop){
+                node_no=1;
+                log_debug(LD_OR,"ENTRY Received FLOWCONTROL cell in (%d) direction:%d %lld",direction,cells_fwded_neighbor,log_time);
+                log_debug(LD_OR,"ENTRY fwded:%d: neigbor fwded:%d: balance:%d",cells_fwded,cells_fwded_neighbor,balance);
+            }
+            else{
+                node_no=2;
+                log_debug(LD_OR,"MIDDLE Received FLOWCONTROL cell in (%d) direction:%d %lld",direction,cells_fwded_neighbor,log_time);
+                log_debug(LD_OR,"MIDDLE fwded:%d: neigbor fwded:%d: balance:%d",cells_fwded,cells_fwded_neighbor,balance);
+            }
+        }
+    }
+    return node_no;
+
+}
+
 /** Process incoming N23-Flowcontrol cell on the <b>chan</b> and update the credit
     balance of the corresponding circuit. Make the circuit active and resume reading
     from the edge connections on that circuit.
@@ -190,54 +220,39 @@ command_process_flowcontrol_cell(cell_t *cell, channel_t *chan){
       hop towards the exit, then increment credit_balance_n else increment
       credit_balance_p.
     */
-    log_debug(LD_OR,
-            "Got a N23-FLOWCONTROL cell for circ_id %u on channel " U64_FORMAT
-            " (%p)",
-            (unsigned)cell->circ_id,
-            U64_PRINTF_ARG(chan->global_identifier), chan);
+    log_debug(LD_OR,"Got a N23-FLOWCONTROL cell for circ_id %u on channel " U64_FORMAT
+            " (%p)",(unsigned)cell->circ_id,U64_PRINTF_ARG(chan->global_identifier), chan);
 
+    int balance;
+    uint32_t cells_fwded;
+    int direction;
     if(circ->n_chan==chan){
         circ->credit_balance_n = (N2+N3)-(circ->cells_fwded_n-cells_fwded_neighbor);
         // Need to  make circ active in chan
         circuitmux_set_num_cells(chan->cmux,circ,circ->n_chan_cells.n);
+        balance= circ->credit_balance_n;
+        direction = CELL_DIRECTION_OUT;
     }else{
         or_circ=TO_OR_CIRCUIT(circ);
         or_circ->credit_balance_p = (N2+N3)-(or_circ->cells_fwded_p-cells_fwded_neighbor);
         // Need to  make or_circ active in chan
         circuitmux_set_num_cells(chan->cmux,or_circ,or_circ->p_chan_cells.n);
-
+        balance = TO_OR_CIRCUIT(circ)->credit_balance_p;
+        direction = CELL_DIRECTION_IN;
     }
 
-    if(!CIRCUIT_IS_ORIGIN(circ)){
-        if(!circ->n_chan){
-            log_debug(LD_OR,
-                "EXIT Router has received %llu N23-FLOWCONTROL cells for circ_id %u on channel " U64_FORMAT
-                " (%p)",
-                stats_n_flowcontrol_cells_processed,(unsigned)cell->circ_id,
-                U64_PRINTF_ARG(chan->global_identifier), chan);
+    int which_node=0;
+    if(direction == CELL_DIRECTION_IN)
+        which_node=log_flowcontrol(circ,cells_fwded,cells_fwded_neighbor,balance,direction);
 
-        }
-        else{
-            or_circ=TO_OR_CIRCUIT(circ);
-
-            if(or_circ->is_first_hop){
-                log_debug(LD_OR,
-                "ENTRY Router has received %llu N23-FLOWCONTROL cell for circ_id %u on channel " U64_FORMAT
-                " (%p)",
-                stats_n_flowcontrol_cells_processed, (unsigned)cell->circ_id,
-                U64_PRINTF_ARG(chan->global_identifier), chan);
-            }
-            else{
-                log_debug(LD_OR,
-                "MIDDLE Router has received %llu N23-FLOWCONTROL cell for circ_id %u on channel " U64_FORMAT
-                " (%p)",
-                stats_n_flowcontrol_cells_processed,(unsigned)cell->circ_id,
-                U64_PRINTF_ARG(chan->global_identifier), chan);
-
-            }
-        }
-    }
-
+    if (!channel_has_queued_writes(chan)) {
+    /* There is no data at all waiting to be sent on the outbuf.  Add a
+     * cell, so that we can notice when it gets flushed, flushed_some can
+     * get called, and we can start putting more data onto the buffer then.
+     */
+        log_debug(LD_GENERAL, "NODE %d Primed a buffer after receiving a Flowcontrol Cell",which_node);
+        channel_flush_from_first_active_circuit(chan, 1);
+      }
     //If exit, resume reading from the streams
     if(!circ->n_chan){
         circuit_resume_edge_reading_wrapper(circ,NULL);
