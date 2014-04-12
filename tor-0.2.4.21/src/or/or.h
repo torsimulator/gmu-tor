@@ -819,7 +819,7 @@ typedef enum {
 /** Amount to increment a stream window when we get a stream SENDME. */
 #define STREAMWINDOW_INCREMENT 50
 
-#define N2 10
+#define N2 (get_options()->N2)
 #define N3 (get_options()->N3Initial)
 
 /** Maximum number of queued cells on a circuit for which we are the
@@ -4109,6 +4109,10 @@ typedef struct {
   int UseN23;
    /** The initial value of N3. */
   int N3Initial;
+
+  /**Value of N2**/
+
+  int N2;
 
 
 } or_options_t;
