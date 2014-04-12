@@ -438,7 +438,7 @@ static config_var_t option_vars_[] = {
   VAR("___UsingTestNetworkDefaults", BOOL, UsingTestNetworkDefaults_, "0"),
   V(UseN23, BOOL, "1"),
   V(N3Initial, UINT, "1000"),
-  V(N2,UINT,"10"),
+  V(N2Initial,UINT,"10"),
 
   { NULL, CONFIG_TYPE_OBSOLETE, 0, NULL }
 };
