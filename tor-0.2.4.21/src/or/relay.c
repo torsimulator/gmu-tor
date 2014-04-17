@@ -1762,7 +1762,9 @@ if(!get_options()->UseN23)
     circuit_consider_stop_edge_reading(circ, cpath_layer);
     return 0; /* don't process the inbuf any more */
   }
-  log_debug(domain,"conn->package_window is now %d",conn->package_window);
+
+  long long int log_time = time(NULL);
+  log_debug(domain,"On CIRCUIT %d STREAM %d conn->package_window is now: %d %lld",circ->n_circ_id, conn->stream_id,conn->package_window,log_time);
 }
   if (max_cells) {
     *max_cells -= 1;
