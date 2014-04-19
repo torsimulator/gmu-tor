@@ -1763,8 +1763,10 @@ if(!get_options()->UseN23)
     return 0; /* don't process the inbuf any more */
   }
 
-  long long int log_time = time(NULL);
-  log_debug(domain,"On CIRCUIT %d STREAM %d conn->package_window is now: %d %lld",circ->n_circ_id, conn->stream_id,conn->package_window,log_time);
+  if(!CIRCUIT_IS_ORIGIN(circ) && !circ->n_chan){
+    long long int log_time = time(NULL);
+    log_debug(domain,"On CIRCUIT, STREAM, conn->package_window is now: %d %d %d %lld",circ->n_circ_id, conn->stream_id,conn->package_window,log_time);
+  }
 }
   if (max_cells) {
     *max_cells -= 1;
