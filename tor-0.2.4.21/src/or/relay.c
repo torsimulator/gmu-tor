@@ -1764,8 +1764,10 @@ if(!get_options()->UseN23)
   }
 
   if(!CIRCUIT_IS_ORIGIN(circ) && !circ->n_chan){
+	or_circuit_t *or_circ = TO_OR_CIRCUIT(circ);
+	
     long long int log_time = time(NULL);
-    log_debug(domain,"On CIRCUIT, STREAM, conn->package_window is now: %d %d %d %lld",circ->n_circ_id, conn->stream_id,conn->package_window,log_time);
+    log_debug(domain,"On CIRCUIT, STREAM, conn->package_window is now: %d %d %d %lld",or_circ->p_circ_id, conn->stream_id,conn->package_window,log_time);
   }
 }
   if (max_cells) {
