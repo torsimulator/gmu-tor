@@ -2184,6 +2184,7 @@ dumpstats(int severity)
       "                        ("U64_FORMAT" relayed)\n"
       "                        ("U64_FORMAT" delivered)\n"
       "                 "U64_FORMAT" destroy",
+      "                 "U64_FORMAT" flowcontrol",
       U64_PRINTF_ARG(stats_n_padding_cells_processed),
       U64_PRINTF_ARG(stats_n_create_cells_processed),
       U64_PRINTF_ARG(stats_n_created_cells_processed),

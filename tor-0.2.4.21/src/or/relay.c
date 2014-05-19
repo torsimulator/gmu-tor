@@ -2383,7 +2383,7 @@ void relay_role(circuit_t *circ,char *which_node){
             else
                 strcpy(which_node,"MIDDLE");
         }
-        strcpy(which_node,"Undetermined");
+        strcpy(which_node,"NONE");
 }
 
 /** Pull as many cells as possible (but no more than <b>max</b>) from the
