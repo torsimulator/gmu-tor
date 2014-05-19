@@ -2448,8 +2448,8 @@ channel_flush_from_first_active_circuit(channel_t *chan, int max)
              relay_role(circ,which_node);
              struct timeval now;
              tor_gettimeofday(&now);
-             log_notice(LD_GENERAL, "[%"PRId64"][CELL_TRACK][%s][CIRC_QUEUE_POP] circ_id=%d unique_id=%8.8X command=%d",
-                             tv_to_msec(&now),which_node,unpacked_cell.circ_id, unpacked_cell.unique_id, unpacked_cell.command);
+             log_notice(LD_GENERAL, "[%"PRId64"][%lld][CELL_TRACK][%s][CIRC_QUEUE_POP] circ_id=%d unique_id=%8.8X command=%d",
+                             tv_to_msec(&now),time(NULL),which_node,unpacked_cell.circ_id, unpacked_cell.unique_id, unpacked_cell.command);
             }
         }
     }
@@ -2581,8 +2581,8 @@ append_cell_to_circuit_queue(circuit_t *circ, channel_t *chan,
         relay_role(circ,which_node);
         struct timeval now;
         tor_gettimeofday(&now);
-        log_notice(LD_GENERAL, "[%" PRId64 "][CELL_TRACK][%s][CIRC_QUEUE_APPEND] circ_id=%d unique_id=%8.8X command=%d",
-             tv_to_msec(&now),which_node,cell->circ_id, cell->unique_id, cell->command);
+        log_notice(LD_GENERAL, "[%" PRId64 "][%lld][CELL_TRACK][%s][CIRC_QUEUE_APPEND] circ_id=%d unique_id=%8.8X command=%d",
+             tv_to_msec(&now),time(NULL),which_node,cell->circ_id, cell->unique_id, cell->command);
       }
     }
   cell_queue_append_packed_copy(queue, cell, chan->wide_circ_ids);
