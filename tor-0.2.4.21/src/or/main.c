@@ -2184,15 +2184,13 @@ dumpstats(int severity)
       "                        ("U64_FORMAT" relayed)\n"
       "                        ("U64_FORMAT" delivered)\n"
       "                 "U64_FORMAT" destroy",
-      "                 "U64_FORMAT" flowcontrol",
       U64_PRINTF_ARG(stats_n_padding_cells_processed),
       U64_PRINTF_ARG(stats_n_create_cells_processed),
       U64_PRINTF_ARG(stats_n_created_cells_processed),
       U64_PRINTF_ARG(stats_n_relay_cells_processed),
       U64_PRINTF_ARG(stats_n_relay_cells_relayed),
       U64_PRINTF_ARG(stats_n_relay_cells_delivered),
-      U64_PRINTF_ARG(stats_n_destroy_cells_processed),
-      U64_PRINTF_ARG(stats_n_flowcontrol_cells_processed));
+      U64_PRINTF_ARG(stats_n_destroy_cells_processed));
   if (stats_n_data_cells_packaged)
     tor_log(severity,LD_NET,"Average packaged cell fullness: %2.3f%%",
         100*(U64_TO_DBL(stats_n_data_bytes_packaged) /

@@ -2373,6 +2373,8 @@ set_streams_blocked_on_circ(circuit_t *circ, channel_t *chan,
 */
 void relay_role(circuit_t *circ,char *which_node){
 
+        strcpy(which_node,"NONE");
+
         if(!circ->n_chan){
             strcpy(which_node,"EXIT");
         }
@@ -2383,7 +2385,7 @@ void relay_role(circuit_t *circ,char *which_node){
             else
                 strcpy(which_node,"MIDDLE");
         }
-        strcpy(which_node,"NONE");
+
 }
 
 /** Pull as many cells as possible (but no more than <b>max</b>) from the
