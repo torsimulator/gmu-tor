@@ -876,15 +876,16 @@ typedef enum {
  *         Length                  [2 bytes]
  *         Relay payload           [498 bytes]
  */
-
+/*Additional Header to track cells*/
+#define CELL_TRACKING_DATA_SIZE 4
 /** Number of bytes in a cell, minus cell header. */
 #define CELL_PAYLOAD_SIZE 509
 /** Number of bytes in a cell transmitted over the network, in the longest
  * form */
-#define CELL_MAX_NETWORK_SIZE 514
+#define CELL_MAX_NETWORK_SIZE (514+CELL_TRACKING_DATA_SIZE)
 
 /** Maximum length of a header on a variable-length cell. */
-#define VAR_CELL_MAX_HEADER_SIZE 7
+#define VAR_CELL_MAX_HEADER_SIZE (7+CELL_TRACKING_DATA_SIZE)
 
 static int get_cell_network_size(int wide_circ_ids);
 static INLINE int get_cell_network_size(int wide_circ_ids)
