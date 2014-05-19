@@ -2371,15 +2371,17 @@ set_streams_blocked_on_circ(circuit_t *circ, channel_t *chan,
 */
 void relay_role(circuit_t *circ,char *which_node){
 
-    if(!circ->n_chan){
-        strcpy(which_node,"EXIT");
-    }
-    else {
-        or_circuit_t *or_circ = TO_OR_CIRCUIT(circ);
-        if(or_circ->is_first_hop)
-            strcpy(which_node,"ENTRY");
-        else
-            strcpy(which_node,"MIDDLE");
+    if (!CIRCUIT_IS_ORIGIN(circ)){
+        if(!circ->n_chan){
+            strcpy(which_node,"EXIT");
+        }
+        else {
+            or_circuit_t *or_circ = TO_OR_CIRCUIT(circ);
+            if(or_circ->is_first_hop)
+                strcpy(which_node,"ENTRY");
+            else
+                strcpy(which_node,"MIDDLE");
+        }
     }
 }
 
