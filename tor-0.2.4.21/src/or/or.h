@@ -1061,6 +1061,7 @@ typedef struct cell_t {
   circid_t circ_id; /**< Circuit which received the cell. */
   uint8_t command; /**< Type of the cell: one of CELL_PADDING, CELL_CREATE,
                     * CELL_DESTROY, etc */
+  uint32_t unique_id;
   uint8_t payload[CELL_PAYLOAD_SIZE]; /**< Cell body. */
 } cell_t;
 
@@ -1072,14 +1073,17 @@ typedef struct var_cell_t {
   circid_t circ_id;
   /** Number of bytes actually stored in <b>payload</b> */
   uint16_t payload_len;
+  uint32_t unique_id;
   /** Payload of this cell */
   uint8_t payload[FLEXIBLE_ARRAY_MEMBER];
+
 } var_cell_t;
 
 /** A cell as packed for writing to the network. */
 typedef struct packed_cell_t {
   struct packed_cell_t *next; /**< Next cell queued on this circuit. */
   char body[CELL_MAX_NETWORK_SIZE]; /**< Cell as packed for network. */
+  uint32_t unique_id;
   uint32_t inserted_time; /**< Time (in milliseconds since epoch, with high
                            * bits truncated) when this cell was inserted. */
 } packed_cell_t;

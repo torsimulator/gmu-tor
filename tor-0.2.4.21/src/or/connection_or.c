@@ -343,6 +343,50 @@ connection_or_get_num_circuits(or_connection_t *conn)
 
 /**************************************************************/
 
+static tor_weak_rng_t cell_track_rng = TOR_WEAK_RNG_INIT;
+
+static void
+cell_track_cell(uint32_t* cellid, circid_t circid,
+		uint8_t command, int dostamp, const char *cell_msg)
+{
+  tor_assert(cellid);
+
+  /* RJ: always draw the randoms, even if cell tracking is turned off.
+   * this ensures that the tracking config option will not break
+   * deterministic experiments in shadow (running with or w/o that
+   * option should produce identical results) */
+  //double r_sample = (double)tor_weak_random(&cell_track_rng) / (double)TOR_WEAK_RANDOM_MAX;
+  double r_id = (double)tor_weak_random(&cell_track_rng) / (double)TOR_WEAK_RANDOM_MAX;
+  //double sample_rate = get_options()->TrackCellSampleRate;
+
+  /* RJ: clients use the InitiateCellTracking option to know they should start
+   * tracking cells. exits only track cells reactively on circuits where they've
+   * detected clients have already initiated tracking. */
+ // if(sample_rate > 0 && (dostamp > 0 || get_options()->InitiateCellTracking)) {
+    /* JG: Track cells created, based on sample rate */
+ //	if(r_sample < sample_rate) {
+	  *cellid = (uint32_t) round(r_id * UINT32_MAX);
+      log_notice(LD_GENERAL, "[CELL_TRACK] [%s] circ_id=%d unique_id=%8.8X command=%d",
+         (cell_msg?cell_msg:"null"), circid, *cellid, command);
+  //  }
+  //}
+}
+
+void
+cell_set_unique_id(cell_t *cell, circuit_t *circ, const char *cell_msg)
+{
+  tor_assert(cell);
+  //cell_track_cell(&cell->unique_id, cell->circ_id, cell->command, (circ?circ->stamp_cells:0), cell_msg);
+  cell_track_cell(&cell->unique_id, cell->circ_id, cell->command, 0, cell_msg);
+}
+
+void
+var_cell_set_unique_id(var_cell_t *cell, const char *cell_msg)
+{
+  tor_assert(cell);
+  cell_track_cell(&cell->unique_id, cell->circ_id, cell->command, 0, cell_msg);
+}
+
 /** Pack the cell_t host-order structure <b>src</b> into network-order
  * in the buffer <b>dest</b>. See tor-spec.txt for details about the
  * wire format.
@@ -362,6 +406,9 @@ cell_pack(packed_cell_t *dst, const cell_t *src, int wide_circ_ids)
     dest += 2;
     memset(dest+CELL_MAX_NETWORK_SIZE-2, 0, 2); /*make sure it's clear */
   }
+
+  set_uint32(dest,htonl(src->unique_id));
+  dest += 4;
   set_uint8(dest, src->command);
   memcpy(dest+1, src->payload, CELL_PAYLOAD_SIZE);
 }
@@ -369,7 +416,7 @@ cell_pack(packed_cell_t *dst, const cell_t *src, int wide_circ_ids)
 /** Unpack the network-order buffer <b>src</b> into a host-order
  * cell_t structure <b>dest</b>.
  */
-static void
+void
 cell_unpack(cell_t *dest, const char *src, int wide_circ_ids)
 {
   if (wide_circ_ids) {
@@ -379,6 +426,8 @@ cell_unpack(cell_t *dest, const char *src, int wide_circ_ids)
     dest->circ_id = ntohs(get_uint16(src));
     src += 2;
   }
+  dest->unique_id = ntohl(get_uint32(src));
+  src += 4;
   dest->command = get_uint8(src);
   memcpy(dest->payload, src+1, CELL_PAYLOAD_SIZE);
 }
@@ -398,6 +447,9 @@ var_cell_pack_header(const var_cell_t *cell, char *hdr_out, int wide_circ_ids)
     hdr_out += 2;
     r = VAR_CELL_MAX_HEADER_SIZE - 2;
   }
+  set_uint32(hdr_out,htonl(cell->unique_id));
+  hdr_out +=4;
+
   set_uint8(hdr_out, cell->command);
   set_uint16(hdr_out+1, htons(cell->payload_len));
   return r;
@@ -413,6 +465,9 @@ var_cell_new(uint16_t payload_len)
   cell->payload_len = payload_len;
   cell->command = 0;
   cell->circ_id = 0;
+  cell->unique_id = 0;
+
+  var_cell_set_unique_id(cell,"CREATE_CELL_VAR");
   return cell;
 }
 
