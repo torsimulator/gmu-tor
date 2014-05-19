@@ -599,7 +599,9 @@ relay_send_command_from_edge_(streamid_t stream_id, circuit_t *circ,
   log_debug(LD_OR,"delivering %d cell %s.", relay_command,
             cell_direction == CELL_DIRECTION_OUT ? "forward" : "backward");
 
-  cell_set_unique_id(&cell, circ, "CREATE_CELL_RELAY");
+    if (!CIRCUIT_IS_ORIGIN(circ)){
+      cell_set_unique_id(&cell, circ, "CREATE_CELL_RELAY");
+    }
   /* If we are sending an END cell and this circuit is used for a tunneled
    * directory request, advance its state. */
   if (relay_command == RELAY_COMMAND_END && circ->dirreq_id)
@@ -2371,7 +2373,6 @@ set_streams_blocked_on_circ(circuit_t *circ, channel_t *chan,
 */
 void relay_role(circuit_t *circ,char *which_node){
 
-    if (!CIRCUIT_IS_ORIGIN(circ)){
         if(!circ->n_chan){
             strcpy(which_node,"EXIT");
         }
@@ -2382,7 +2383,7 @@ void relay_role(circuit_t *circ,char *which_node){
             else
                 strcpy(which_node,"MIDDLE");
         }
-    }
+        strcpy(which_node,"Undetermined");
 }
 
 /** Pull as many cells as possible (but no more than <b>max</b>) from the
@@ -2436,16 +2437,18 @@ channel_flush_from_first_active_circuit(channel_t *chan, int max)
     cell = cell_queue_pop(queue);
 
     /* Cell Tracking - De-Queue*/
-    if(cell!=NULL){
-        cell_t unpacked_cell;
-        cell_unpack(&unpacked_cell, cell->body, 1);
-        if(unpacked_cell.unique_id) {
-         char which_node[5];
-         relay_role(circ,which_node);
-         struct timeval now;
-         tor_gettimeofday(&now);
-         log_notice(LD_GENERAL, "[%"PRId64"][CELL_TRACK][%s][CIRC_QUEUE_POP] circ_id=%d unique_id=%8.8X command=%d",
-                         tv_to_msec(&now),which_node,unpacked_cell.circ_id, unpacked_cell.unique_id, unpacked_cell.command);
+    if (!CIRCUIT_IS_ORIGIN(circ)){
+        if(cell!=NULL){
+            cell_t unpacked_cell;
+            cell_unpack(&unpacked_cell, cell->body, 1);
+            if(unpacked_cell.unique_id) {
+             char which_node[5];
+             relay_role(circ,which_node);
+             struct timeval now;
+             tor_gettimeofday(&now);
+             log_notice(LD_GENERAL, "[%"PRId64"][CELL_TRACK][%s][CIRC_QUEUE_POP] circ_id=%d unique_id=%8.8X command=%d",
+                             tv_to_msec(&now),which_node,unpacked_cell.circ_id, unpacked_cell.unique_id, unpacked_cell.command);
+            }
         }
     }
 
@@ -2570,16 +2573,16 @@ append_cell_to_circuit_queue(circuit_t *circ, channel_t *chan,
   }
 #endif
 
-
-  if(cell->unique_id) {
-    char which_node[5];
-    relay_role(circ,which_node);
-    struct timeval now;
-    tor_gettimeofday(&now);
-    log_notice(LD_GENERAL, "[%" PRId64 "][CELL_TRACK][%s][CIRC_QUEUE_APPEND] circ_id=%d unique_id=%8.8X command=%d",
-		 tv_to_msec(&now),which_node,cell->circ_id, cell->unique_id, cell->command);
-  }
-
+    if (!CIRCUIT_IS_ORIGIN(circ)){
+      if(cell->unique_id) {
+        char which_node[5];
+        relay_role(circ,which_node);
+        struct timeval now;
+        tor_gettimeofday(&now);
+        log_notice(LD_GENERAL, "[%" PRId64 "][CELL_TRACK][%s][CIRC_QUEUE_APPEND] circ_id=%d unique_id=%8.8X command=%d",
+             tv_to_msec(&now),which_node,cell->circ_id, cell->unique_id, cell->command);
+      }
+    }
   cell_queue_append_packed_copy(queue, cell, chan->wide_circ_ids);
 
   if (PREDICT_UNLIKELY(cell_queues_check_size())) {
