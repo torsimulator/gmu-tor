@@ -347,7 +347,7 @@ static tor_weak_rng_t cell_track_rng = TOR_WEAK_RNG_INIT;
 
 static void
 cell_track_cell(uint32_t* cellid, circid_t circid,
-		uint8_t command, int dostamp, const char *cell_msg, char *which_node)
+		uint8_t command, int dostamp, const char *cell_msg)
 {
   tor_assert(cellid);
 
@@ -375,11 +375,11 @@ cell_track_cell(uint32_t* cellid, circid_t circid,
 }
 
 void
-cell_set_unique_id(cell_t *cell, circuit_t *circ, const char *cell_msg,char *which_node)
+cell_set_unique_id(cell_t *cell, circuit_t *circ, const char *cell_msg)
 {
   tor_assert(cell);
   //cell_track_cell(&cell->unique_id, cell->circ_id, cell->command, (circ?circ->stamp_cells:0), cell_msg);
-  cell_track_cell(&cell->unique_id, cell->circ_id, cell->command, 0, cell_msg,which_node);
+  cell_track_cell(&cell->unique_id, cell->circ_id, cell->command, 0, cell_msg);
 }
 
 void
@@ -388,7 +388,7 @@ var_cell_set_unique_id(var_cell_t *cell, const char *cell_msg)
   tor_assert(cell);
   char which_node[5];
   strcpy(which_node,"NULL");
-  cell_track_cell(&cell->unique_id, cell->circ_id, cell->command, 0, cell_msg,which_node);
+  cell_track_cell(&cell->unique_id, cell->circ_id, cell->command, 0, cell_msg);
 }
 
 /** Pack the cell_t host-order structure <b>src</b> into network-order

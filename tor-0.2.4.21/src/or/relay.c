@@ -618,9 +618,9 @@ relay_send_command_from_edge_(streamid_t stream_id, circuit_t *circ,
             cell_direction == CELL_DIRECTION_OUT ? "forward" : "backward");
 
     if (!CIRCUIT_IS_ORIGIN(circ)){
-      char which_node[5];
-      relay_role(circ,which_node);
-      cell_set_unique_id(&cell, circ, "CREATE_CELL_RELAY",which_node);
+      //char which_node[5];
+      //relay_role(circ,which_node);
+      cell_set_unique_id(&cell, circ, "CREATE_CELL_RELAY");
     }
   /* If we are sending an END cell and this circuit is used for a tunneled
    * directory request, advance its state. */
