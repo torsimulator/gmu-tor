@@ -83,6 +83,24 @@ int stats_n_sendme_cell=0;
 int get_stats_sendme(){
     return stats_n_sendme_cell;
 }
+/** Determine the role of a relay node in the circuit
+*/
+void relay_role(circuit_t *circ,char *which_node){
+
+        strcpy(which_node,"NONE");
+
+        if(!circ->n_chan){
+            strcpy(which_node,"EXIT");
+        }
+        else {
+            or_circuit_t *or_circ = TO_OR_CIRCUIT(circ);
+            if(or_circ->is_first_hop)
+                strcpy(which_node,"ENTRY");
+            else
+                strcpy(which_node,"MIDDLE");
+        }
+
+}
 /** Used to tell which stream to read from first on a circuit. */
 static tor_weak_rng_t stream_choice_rng = TOR_WEAK_RNG_INIT;
 
@@ -2370,24 +2388,6 @@ set_streams_blocked_on_circ(circuit_t *circ, channel_t *chan,
   }
 
   return n;
-}
-/** Determine the role of a relay node in the circuit
-*/
-void relay_role(circuit_t *circ,char *which_node){
-
-        strcpy(which_node,"NONE");
-
-        if(!circ->n_chan){
-            strcpy(which_node,"EXIT");
-        }
-        else {
-            or_circuit_t *or_circ = TO_OR_CIRCUIT(circ);
-            if(or_circ->is_first_hop)
-                strcpy(which_node,"ENTRY");
-            else
-                strcpy(which_node,"MIDDLE");
-        }
-
 }
 
 /** Pull as many cells as possible (but no more than <b>max</b>) from the
