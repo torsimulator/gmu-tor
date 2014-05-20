@@ -368,8 +368,8 @@ cell_track_cell(uint32_t* cellid, circid_t circid,
         struct timeval now;
         tor_gettimeofday(&now);
 	  *cellid = (uint32_t) round(r_id * UINT32_MAX);
-      log_notice(LD_GENERAL, "[%"PRId64"][%llu][CELL_TRACK][%s][%s] circ_id=%d unique_id=%8.8X command=%d",
-         tv_to_msec(&now),(long long int)time(NULL),which_node,(cell_msg?cell_msg:"null"), circid, *cellid, command);
+      log_notice(LD_GENERAL, "[%"PRId64"][%llu][CELL_TRACK][%s] circ_id=%d unique_id=%8.8X command=%d",
+         tv_to_msec(&now),(long long int)time(NULL),(cell_msg?cell_msg:"null"), circid, *cellid, command);
   //  }
   //}
 }
