@@ -375,7 +375,7 @@ cell_track_cell(uint32_t* cellid, circid_t circid,
 }
 
 void
-cell_set_unique_id(cell_t *cell, circuit_t *circ, const char *cell_msg,char *which_node=NULL)
+cell_set_unique_id(cell_t *cell, circuit_t *circ, const char *cell_msg,char *which_node)
 {
   tor_assert(cell);
   //cell_track_cell(&cell->unique_id, cell->circ_id, cell->command, (circ?circ->stamp_cells:0), cell_msg);
@@ -386,7 +386,7 @@ void
 var_cell_set_unique_id(var_cell_t *cell, const char *cell_msg)
 {
   tor_assert(cell);
-  cell_track_cell(&cell->unique_id, cell->circ_id, cell->command, 0, cell_msg);
+  cell_track_cell(&cell->unique_id, cell->circ_id, cell->command, 0, cell_msg,NULL);
 }
 
 /** Pack the cell_t host-order structure <b>src</b> into network-order
