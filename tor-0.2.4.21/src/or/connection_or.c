@@ -369,7 +369,7 @@ cell_track_cell(uint32_t* cellid, circid_t circid,
         tor_gettimeofday(&now);
 	  *cellid = (uint32_t) round(r_id * UINT32_MAX);
       log_notice(LD_GENERAL, "[%"PRId64"][%llu][CELL_TRACK][%s][%s] circ_id=%d unique_id=%8.8X command=%d",
-         tv_to_msec(&now),(long long int)time(NULL),(which_node?which_node:"NULL"),(cell_msg?cell_msg:"null"), circid, *cellid, command);
+         tv_to_msec(&now),(long long int)time(NULL),which_node,(cell_msg?cell_msg:"null"), circid, *cellid, command);
   //  }
   //}
 }
@@ -386,7 +386,9 @@ void
 var_cell_set_unique_id(var_cell_t *cell, const char *cell_msg)
 {
   tor_assert(cell);
-  cell_track_cell(&cell->unique_id, cell->circ_id, cell->command, 0, cell_msg,NULL);
+  char which_node[5];
+  strcpy(which_node,"NULL");
+  cell_track_cell(&cell->unique_id, cell->circ_id, cell->command, 0, cell_msg,which_node);
 }
 
 /** Pack the cell_t host-order structure <b>src</b> into network-order
