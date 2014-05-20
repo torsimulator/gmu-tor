@@ -347,7 +347,7 @@ static tor_weak_rng_t cell_track_rng = TOR_WEAK_RNG_INIT;
 
 static void
 cell_track_cell(uint32_t* cellid, circid_t circid,
-		uint8_t command, int dostamp, const char *cell_msg)
+		uint8_t command, int dostamp, const char *cell_msg, char *which_node)
 {
   tor_assert(cellid);
 
@@ -368,18 +368,18 @@ cell_track_cell(uint32_t* cellid, circid_t circid,
         struct timeval now;
         tor_gettimeofday(&now);
 	  *cellid = (uint32_t) round(r_id * UINT32_MAX);
-      log_notice(LD_GENERAL, "[%"PRId64"][CELL_TRACK] [%s] circ_id=%d unique_id=%8.8X command=%d",
-         tv_to_msec(&now),(cell_msg?cell_msg:"null"), circid, *cellid, command);
+      log_notice(LD_GENERAL, "[%"PRId64"][%llu][CELL_TRACK][%s][%s] circ_id=%d unique_id=%8.8X command=%d",
+         tv_to_msec(&now),(long long int)time(NULL),(which_node?which_node:"NULL"),(cell_msg?cell_msg:"null"), circid, *cellid, command);
   //  }
   //}
 }
 
 void
-cell_set_unique_id(cell_t *cell, circuit_t *circ, const char *cell_msg)
+cell_set_unique_id(cell_t *cell, circuit_t *circ, const char *cell_msg,char *which_node=NULL)
 {
   tor_assert(cell);
   //cell_track_cell(&cell->unique_id, cell->circ_id, cell->command, (circ?circ->stamp_cells:0), cell_msg);
-  cell_track_cell(&cell->unique_id, cell->circ_id, cell->command, 0, cell_msg);
+  cell_track_cell(&cell->unique_id, cell->circ_id, cell->command, 0, cell_msg,which_node);
 }
 
 void
