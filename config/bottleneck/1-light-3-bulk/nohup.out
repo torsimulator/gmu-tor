@@ -1,0 +1,9 @@
+[94m[2014-07-07 21:38:05.209444] scallion: Data exists in output path[0m
+Is it OK to clear data directory /raid/sim1/gmu-tor/config/bottleneck/1-light-3-bulk/data? [y/N] Traceback (most recent call last):
+  File "/home/sim1/.shadow/bin/scallion", line 127, in <module>
+    main()
+  File "/home/sim1/.shadow/bin/scallion", line 42, in main
+    if not args.clear and not query_yes_no("Is it OK to clear data directory {0}?".format(datapath), default="no"): 
+  File "/home/sim1/.shadow/bin/scallion", line 110, in query_yes_no
+    choice = raw_input().lower()
+IOError: [Errno 9] Bad file descriptor
