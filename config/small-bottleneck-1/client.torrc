@@ -21,8 +21,8 @@ DirPort 0
 ClientOnly 1
 SocksPort 9000
 SocksListenAddress 127.0.0.1
-ExcludeNodes slowrelay
+ExcludeNodes fastrelay
 StrictNodes 1
-#log debug stdout
+log debug stdout
 #InitiateCellTracking 1
 #TrackCellSampleRate 1

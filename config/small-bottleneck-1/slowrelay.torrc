@@ -22,4 +22,4 @@ SocksPort 0
 ExitPolicy "reject *:*"
 RelayBandwidthRate 128 KB
 MaxAdvertisedBandwidth 128 KB
-#log debug stdout
+log debug stdout
