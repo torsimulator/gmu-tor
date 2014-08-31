@@ -16,7 +16,7 @@
 		</TorClient>
 
 		<Objective> 
-			To understand the reponse time of light circuit when multiplexed with a bulk circuit with a bottleneck in the middle node
+			To understand the response time of light circuit when multiplexed with a bulk circuit with a bottleneck in the middle node
 		</Objective>
 
 	</ConfigFile>
@@ -56,7 +56,7 @@
 		</TorClient>
 
 		<Objective> 
-			To understand the reponse time of a light circuit in the absence of any congestion or bottleneck.
+			To understand the response time of a light circuit in the absence of any congestion or bottleneck.
 		</Objective>
 
 	</ConfigFile>
@@ -76,19 +76,19 @@
 		</TorClient>
 
 		<Objective> 
-			To understand the reponse time of a bulk circuit in the absence of any congestion or bottleneck.
+			To understand the response time of a bulk circuit in the absence of any congestion or bottleneck.
 		</Objective>
 
 	</ConfigFile>
 
-		<ConfigFile name="tiny-non-bottleneck-3">
+	<ConfigFile name="tiny-non-bottleneck-3">
 		
 		<TorInfrastructure> 
 			The Tor infrastructure consists of 1 guard, 1 middle, 1 exit and 1 directory authority node. All nodes have a bandwidth of 10 Mbps.
 		</TorInfrastructure>
 
 		<FileServer>
-			One file server hosting files with sizes 320 Kb.
+			One file server hosting files of size 320 Kb and 5Mb
 		</FileServer>
 
 		<TorClient>
@@ -97,10 +97,33 @@
 		</TorClient>
 
 		<Objective>
-			To understand the reponse time of a light circuit when multiplexed with a bulk circuit in the absence of any congestion or bottleneck.
+			To understand the response time of a light circuit when multiplexed with a bulk circuit in the absence of any congestion or bottleneck.
 		</Objective>
 
 	</ConfigFile>
+
+        <ConfigFile name="small-bottleneck-1">
+
+                <TorInfrastructure>
+                        The Tor infrastructure consists of 3 guards, 1 middle, 3 exits and 1 directory authority node. The middle node has a bandwidth of 128Kbps while the remaining nodes have 10Mbps
+                </TorInfrastructure>
+
+                <FileServer>
+                        One file server hosting files of size 320 Kb.
+                </FileServer>
+
+                <TorClient>
+			Each client chooses a distinct guard node, the bottleneck middle node and a distinct exit node to create a circuit.
+			Each client downloads 320 Kb file from the file server over the corresponding circuits.
+                        Each client downloads these files 100 times with "thinking time" randomly sampled between 1 to 3 seconds.
+                </TorClient>
+
+                <Objective>
+                        To understand the response time of multiple light circuits when multiplexed through a bottleneck middle relay.
+                </Objective>
+
+        </ConfigFile>
+
 
 	
 </ConfigDescription>
