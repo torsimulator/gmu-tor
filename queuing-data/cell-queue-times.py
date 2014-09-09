@@ -1,88 +1,80 @@
 
 import sys
 def timeInSeconds(str_time):
+
 	split_time = str_time.split(':');
-	
-	time_in_secs = split_time[0]*3600 + split_time[1]*60 + split_time[2] #+ split_time[3]*(10**(-9));
-	return split_time;
 
-arg = sys.argv
-#file = open(arg[1],'r')		# Cell Tracking log of one circuit downloading one file
-start_time = "00:12:02:12010" #arg[2]			# Download start time in seconds
+	time_in_secs = int(split_time[0])*3600 + int(split_time[1])*60 + int(split_time[2])+ int(split_time[3])*(10**(-9));
+	return float(time_in_secs);
 
-time_in_secs = timeInSeconds(start_time);
-time_in_secs
-#file.close()
+def diffTimeInSeconds (time_1,time_2):
+	return (time_1-time_2);
 
+def getUniqueId(line):
+	return line.split('unique_id=')[1].split(' ')[0]
 
+def getIndex(track_cell, unique_id):
+	for i,x in enumerate(track_cell):
+		if(x[0] == unique_id):
+			return i;
+	return -1;
 
-
-
-# log_time={}
-# start_time = 1200
-# download_time = 3
-# end_time = start_time + download_time
-# count = 0
-# max_cells = 200;
-# unaccounted_cells = 0
-
-# for line in file:
-# 	# print line
-# 	if line.find("CELL_TRACK") != -1 & line.find("tor-message") != -1:
-# 		cell_id = line.split('unique_id=')[1].split(' ')[0]
-# 		part=line.split('[')
-# 		time = part[5].split(']')[0]
-# 		experiment_time = int(part[6].split(']')[0])
-# 		# print cell_id
-# 		# print time
-# 		if (experiment_time >= start_time) &(experiment_time <= end_time):
-# 			if (line.find("CREATE_CELL_RELAY")!=-1) & (line.find("exit")!=-1) & (max_cells > 0):
-# 				log_time[cell_id] = time + " "
-# 				# max_cells -= 1
-
-# 			else:
-# 				if (cell_id in log_time):
-# 					if(len(log_time[cell_id].split(' ')) <= 7):
-# 						log_time[cell_id] += time +" "
-# 		else:
-# 			if (experiment_time < start_time):
-# 				unaccounted_cells +=1
+if __name__ == '__main__':
+	arg = sys.argv
+	file = open(arg[1],'r')		# Cell Tracking log of one circuit downloading one file
+	start_time = float(arg[2])	# Download start time in seconds
+	track_cell =[];				#Stores cell queuing and de-queuing times. Format: ['Cell_ID', Exit_Queue, Exit_DeQueue, Middle_Queue, Middle_DeQueue, Entry_Queue, Entry_DeQueue]
 
 
-# 		# print queue_time
-# 		# count += 1
-# 		# if count == 7:
-# 		# 	break
+	for line in file:
+		if(line.find("fg-download-complete")!=-1):								# Download Complete. Need not log cell queuing time of subsequent cells
+			break;
 
-# queuing_time_in_relay={}
-# iterator = iter(log_time)
+		if ((line.find("CELL_TRACK") != -1) & (line.find("tor-message")!=-1)):
+			split_entry = line.split(' ');
+# 			print(line);
+			log_time = timeInSeconds(split_entry[2]);									#Retrieve log time
 
-# # print log_time["07AE12D8"]
-# # print len(log_time)
-# # print unaccounted_cells
-# # print log_time
-# # quit()
-# output_file =open("non-zero-queue-times-log.csv","a")
+			if((log_time >= start_time)):												# Log cells after download begins
+				unique_id = getUniqueId(line);
+				if (line.find("CREATE_CELL_RELAY")!=-1) & (line.find("exit")!=-1):		# A new relay cell is created at the exit node
+					track_cell.append([]);
+					track_cell[len(track_cell)-1].append(unique_id);
 
-# relay_queue_counter = [0,0,0]		#EXIT,MIDDLE,ENTRY
-# while count < len(log_time):
-# 	cell_id=next(iterator)
-# 	parts = log_time[cell_id].split(' ')
-# 	if len(parts) != 8: 
-# 		print "The log time of "+cell_id+" is not in the expected format!!"
-# 		count +=1
-# 		continue
+				else:
+					if((line.find("CIRC_QUEUE_APPEND")!=-1) | (line.find("CIRC_QUEUE_POP")!=-1)): #Logging Queuing and De-Queuing times.
+						cell_index=getIndex(track_cell, unique_id);
 
-# 	queuing_time_in_relay[cell_id]=""
-# 	for i in (1,3,5):
-# 		x=int(parts[i+1]) - int(parts[i])
-# 		if (x > 0):
-# 			log_str= str(count)+","+cell_id +","+ str((i-1)/2) +","+parts[i] +","+ parts[i+1]+","+str(x)+"\n"
-# 			output_file.write(log_str)
-# 			relay_queue_counter[(i-1)/2] +=x
+						if (cell_index!=-1):
+							if ((len(track_cell[cell_index]) < 7)): 					#Ignore duplicate cell ID from client side
+								track_cell[cell_index].append(log_time)
+# 							else:
+# 								break;
 
-# 		queuing_time_in_relay[cell_id] += str(x)+" "
 
-# 	count += 1
-# print "Exit={0[0]} Middle={0[1]} Entry={0[2]}".format(relay_queue_counter)
 
+# 	print(track_cell)
+# 	print(track_cell.__len__())
+# 	print(track_cell[0])
+
+# Extracting Cell Queuing Time at Exit, Middle and Entry
+	exit_cell_queue_time=[];
+	middle_cell_queue_time=[];
+	entry_cell_queue_time=[];
+	for cell in track_cell:
+		exit_cell_queue_time.append((cell[2]-cell[1]));
+		middle_cell_queue_time.append((cell[4]-cell[3]));
+		entry_cell_queue_time.append((cell[6]-cell[5]));
+
+	avg_exit_cell_queue=sum(exit_cell_queue_time)/exit_cell_queue_time.__len__();
+	avg_middle_cell_queue=sum(middle_cell_queue_time)/middle_cell_queue_time.__len__();
+	avg_entry_cell_queue=sum(entry_cell_queue_time)/entry_cell_queue_time.__len__();
+
+	print(avg_exit_cell_queue)
+	#print (exit_cell_queue_time)
+	print(avg_middle_cell_queue)
+	#print(middle_cell_queue_time)
+	print(avg_entry_cell_queue)
+	#print(entry_cell_queue_time)
+
+file.close()
